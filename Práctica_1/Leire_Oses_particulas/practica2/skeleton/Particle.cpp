@@ -28,7 +28,5 @@ void Particle::move(float t)
 	//Modificar el transform del renderItem
 	trans = PxTransform(position_);
 	rItem->transform = &trans;
-
-	//trans_.p = position_;
 }
 

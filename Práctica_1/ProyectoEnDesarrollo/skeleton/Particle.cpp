@@ -7,10 +7,8 @@ Particle::~Particle()
 
 void Particle::integrate(float t)
 {
-	// Trivial case, infinite mass --> do nothing
-	if (inverse_mass <= 0.0f) return;
-	// Update position
-	position_ += velocity_ * t;
+	move(t);
+
 	// Update linear velocity
 	velocity_ += acceleration_ * t;
 	// Impose drag (damping)
@@ -28,7 +26,5 @@ void Particle::move(float t)
 	//Modificar el transform del renderItem
 	trans = PxTransform(position_);
 	rItem->transform = &trans;
-
-	//trans_.p = position_;
 }
 

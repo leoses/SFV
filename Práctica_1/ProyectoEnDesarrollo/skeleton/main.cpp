@@ -59,8 +59,9 @@ void initPhysics(bool interactive)
 	
 	//Add Customed Code here
 	//Creamos la particula
-	pte = new Particle(PxVec3(0.0,10.0,-30.0));
+	pte = new Particle(PxVec3(0.0,10.0,-30.0),1.8);
 	pte->setVelocity(PxVec3(0.0, 10.0, 10));
+	pte->setAcceleration(PxVec3(0.0, 3.0, 10.0));
 
 }
 
@@ -75,8 +76,8 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	//Mover la particula a velocidad constante
-	pte->move(t);
+	//Mover la particula teniendo en cuenta la aceleración y el damping
+	pte->integrate(t);
 }
 
 // Function to clean data
