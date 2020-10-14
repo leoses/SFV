@@ -1,0 +1,1 @@
+Para disparar la partícula pulsar la tecla G
