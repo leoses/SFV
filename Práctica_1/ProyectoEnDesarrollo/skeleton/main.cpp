@@ -12,6 +12,7 @@
 #include "Particle.h"
 #include "checkML.h" //Basura
 #include <vector>
+#include <list>
 
 using namespace physx;
 
@@ -33,7 +34,7 @@ ContactReportCallback gContactReportCallback;
 //Añadimos aquí como variables globales los elementos necesarios para la practica
 //Particle* pte = nullptr;
 
-std::vector<Particle*> vParticles;
+std::list<Particle*> vParticles;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -81,9 +82,34 @@ void stepPhysics(bool interactive, double t)
 	//Práctica 3
 	//if(pte  != nullptr)pte->integrate(t);
 
+	/*for (auto i = vParticles.begin(); i != vParticles.end(); ++i) {
+		(*i)->integrate(t);
+		(*i)->addTime(t);
+		if ((*i)->isDead())
+		{
+			vPa
+		}
+	}*/
+
+
+	std::list<Particle*> elemsToErase;
+
 	for (Particle* p : vParticles) {
 		p->integrate(t);
+		p->addTime(t);
+		if (p->isDead()) { 
+			elemsToErase.push_back(p);
+		}
 	}
+
+	for (auto it = elemsToErase.begin(); it != elemsToErase.end(); ++it) {
+		vParticles.remove(*it);
+		if ((*it) != nullptr) {
+			delete (*it);
+			(*it) = nullptr;
+		}
+	}
+	elemsToErase.clear();
 }
 
 // Function to clean data
@@ -128,7 +154,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	}
 	case 'G':
 	{
-		Particle* p = new Particle(camera.p, 0.8);
+		Particle* p = new Particle(camera.p, 0.99);
 		p->setVelocity(50*GetCamera()->getDir());
 		vParticles.push_back(p);
 

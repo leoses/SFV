@@ -28,3 +28,8 @@ void Particle::move(float t)
 	rItem->transform = &trans;
 }
 
+void Particle::addTime(double t)
+{
+	time_ += t;
+}
+
