@@ -29,6 +29,9 @@ private:
     const double LIFE_TIME = 2;
     double time_ = 0;
 
+    //BOOLEANO PARA DETERMINAR SI LA BALA ESTÁ SIENDO USADA
+    bool used_ = false;
+
 public:
     Particle(PxVec3 pos,float damp = 0, float iMass = 0.3):
         position_(pos), 
@@ -44,19 +47,22 @@ public:
     ~Particle();
     void integrate(float t);
     void move(float t);
-    void addTime(double t);
+    void addTime(double t) noexcept;
+    void resetTime() noexcept;
 
 #pragma region Getters
     const PxVec3 getVelocity(){ return velocity_; }
     const PxVec3 getPosition(){ return position_; }
     const PxVec3 getAcceleration() { return acceleration_; }
-    const double isDead() { return time_ > LIFE_TIME; }
+    const double isDead() noexcept { return time_ > LIFE_TIME; }
+    const bool getParticleUsed() noexcept { return used_; }
 #pragma endregion
 
 #pragma region Setters
     inline void setPosition(const PxVec3& newPos) { position_ = newPos; }
     inline void setVelocity(const PxVec3& newVel) { velocity_ = newVel; }
     inline void setAcceleration(const PxVec3& newAcc) { acceleration_ = newAcc; }
+    inline void setParticleUsed(bool used) noexcept { used_ = used; }
 #pragma endregion
 
 

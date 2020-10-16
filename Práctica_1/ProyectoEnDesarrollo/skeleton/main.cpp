@@ -65,6 +65,12 @@ void initPhysics(bool interactive)
 	//Creamos la particula
 	//pte = new Particle(GetCamera()->getEye(), 0.8);
 
+	for (int i = 0; i < 30; i++) {
+		Particle* p = new Particle(GetCamera()->getEye(), 0.99);
+		p->setVelocity(50 * GetCamera()->getDir());
+		vParticles.push_back(p);
+	}
+
 }
 
 
@@ -82,34 +88,30 @@ void stepPhysics(bool interactive, double t)
 	//Práctica 3
 	//if(pte  != nullptr)pte->integrate(t);
 
-	/*for (auto i = vParticles.begin(); i != vParticles.end(); ++i) {
-		(*i)->integrate(t);
-		(*i)->addTime(t);
-		if ((*i)->isDead())
-		{
-			vPa
-		}
-	}*/
-
-
-	std::list<Particle*> elemsToErase;
+	//std::list<Particle*> elemsToErase;
 
 	for (Particle* p : vParticles) {
-		p->integrate(t);
-		p->addTime(t);
-		if (p->isDead()) { 
-			elemsToErase.push_back(p);
+		if (p->getParticleUsed()) {
+			
+			if (p->isDead()) {
+				/*elemsToErase.push_back(p);*/
+				p->setParticleUsed(false);
+				p->resetTime();
+				p->setPosition(Vector3(1000,1000,1000)); //TEMPORAL
+			}
+			p->integrate(t);
+			p->addTime(t);
 		}
 	}
 
-	for (auto it = elemsToErase.begin(); it != elemsToErase.end(); ++it) {
-		vParticles.remove(*it);
-		if ((*it) != nullptr) {
-			delete (*it);
-			(*it) = nullptr;
-		}
-	}
-	elemsToErase.clear();
+	//for (auto it = elemsToErase.begin(); it != elemsToErase.end(); ++it) {
+	//	vParticles.remove(*it);
+	//	if ((*it) != nullptr) {
+	//		delete (*it);
+	//		(*it) = nullptr;
+	//	}
+	//}
+	//elemsToErase.clear();
 }
 
 // Function to clean data
@@ -154,9 +156,17 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	}
 	case 'G':
 	{
-		Particle* p = new Particle(camera.p, 0.99);
+		/*Particle* p = new Particle(camera.p, 0.99);
 		p->setVelocity(50*GetCamera()->getDir());
-		vParticles.push_back(p);
+		vParticles.push_back(p);*/
+		for (Particle* p : vParticles) {
+			if (!p->getParticleUsed()) {
+				p->setPosition(camera.p);
+				p->setVelocity(50 * GetCamera()->getDir());
+				p->setParticleUsed(true);
+				return;
+			}
+		}
 
 		break;
 	}
