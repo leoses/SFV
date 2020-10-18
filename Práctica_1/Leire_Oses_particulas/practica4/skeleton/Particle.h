@@ -25,6 +25,11 @@ private:
     //Transform auxiliar para mover la partícula
     PxTransform trans;
 
+    //TIEMPO DE VIDA DE LA PARTÍCULA
+    const double LIFE_TIME = 2;
+    double time_ = 0;
+
+
 public:
     Particle(PxVec3 pos,float damp = 0, float iMass = 0.3):
         position_(pos), 
@@ -40,11 +45,14 @@ public:
     ~Particle();
     void integrate(float t);
     void move(float t);
+    void addTime(double t) noexcept;
+    void resetTime() noexcept;
 
 #pragma region Getters
     const PxVec3 getVelocity(){ return velocity_; }
     const PxVec3 getPosition(){ return position_; }
     const PxVec3 getAcceleration() { return acceleration_; }
+    const double isDead() noexcept { return time_ > LIFE_TIME; }
 #pragma endregion
 
 #pragma region Setters

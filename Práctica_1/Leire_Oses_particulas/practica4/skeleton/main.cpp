@@ -11,29 +11,29 @@
 //Includes propios
 #include "Particle.h"
 #include "checkML.h" //Basura
-#include <vector>
+#include <list>
 
 using namespace physx;
 
 PxDefaultAllocator		gAllocator;
 PxDefaultErrorCallback	gErrorCallback;
 
-PxFoundation*			gFoundation = NULL;
-PxPhysics*				gPhysics	= NULL;
+PxFoundation* gFoundation = NULL;
+PxPhysics* gPhysics = NULL;
 
 
-PxMaterial*				gMaterial	= NULL;
+PxMaterial* gMaterial = NULL;
 
-PxPvd*                  gPvd        = NULL;
+PxPvd* gPvd = NULL;
 
-PxDefaultCpuDispatcher*	gDispatcher = NULL;
-PxScene*				gScene      = NULL;
+PxDefaultCpuDispatcher* gDispatcher = NULL;
+PxScene* gScene = NULL;
 ContactReportCallback gContactReportCallback;
 
 //Añadimos aquí como variables globales los elementos necesarios para la practica
 //Particle* pte = nullptr;
 
-std::vector<Particle*> vParticles;
+std::list<Particle*> vParticles;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -44,9 +44,9 @@ void initPhysics(bool interactive)
 
 	gPvd = PxCreatePvd(*gFoundation);
 	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
-	gPvd->connect(*transport,PxPvdInstrumentationFlag::eALL);
+	gPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
 
-	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(),true,gPvd);
+	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
@@ -59,10 +59,8 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 	// ------------------------------------------------------
-	
+
 	//Add Customed Code here
-	//Creamos la particula
-	//pte = new Particle(GetCamera()->getEye(), 0.8);
 
 }
 
@@ -77,13 +75,25 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	//Mover la particula teniendo en cuenta la aceleración y el damping
-	//Práctica 3
-	//if(pte  != nullptr)pte->integrate(t);
+	//Lista auxiliar para eliminar partículas que ya hayan sobrepasado su tiempo de vida
+	std::list<Particle*> elemsToErase;
 
+	//Actualizacion de posiciones
 	for (Particle* p : vParticles) {
+
 		p->integrate(t);
+		p->addTime(t);
+
+		if (p->isDead()) elemsToErase.push_back(p);
 	}
+
+	//Eliminación por tiempo
+	for (Particle* p: elemsToErase) {
+		vParticles.remove(p);
+		delete p;
+		p = nullptr;
+	}
+	elemsToErase.clear();
 }
 
 // Function to clean data
@@ -91,9 +101,6 @@ void stepPhysics(bool interactive, double t)
 void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
-
-	//liberamos la partícula
-	//if (pte != nullptr) { delete pte; pte = nullptr; }
 
 	//Liberamos el vector de partículas
 	for (Particle* p : vParticles) {
@@ -105,11 +112,11 @@ void cleanupPhysics(bool interactive)
 	gScene->release();
 	gDispatcher->release();
 	// -----------------------------------------------------
-	gPhysics->release();	
+	gPhysics->release();
 	PxPvdTransport* transport = gPvd->getTransport();
 	gPvd->release();
 	transport->release();
-	
+
 	gFoundation->release();
 }
 
@@ -118,19 +125,27 @@ void keyPress(unsigned char key, const PxTransform& camera)
 {
 	PX_UNUSED(camera);
 
-	switch(toupper(key))
+	switch (toupper(key))
 	{
-	//case 'B': break;
-	//case ' ':	break;
+		//case 'B': break;
+		//case ' ':	break;
 	case ' ':
 	{
 		break;
 	}
 	case 'G':
 	{
-		Particle* p = new Particle(camera.p, 0.8);
-		p->setVelocity(50*GetCamera()->getDir());
+		Particle* p = new Particle(camera.p, 0.99);
+		p->setVelocity(50 * GetCamera()->getDir());
 		vParticles.push_back(p);
+		/*for (Particle* p : vParticles) {
+			if (!p->getParticleUsed()) {
+				p->setPosition(camera.p);
+				p->setVelocity(50 * GetCamera()->getDir());
+				p->setParticleUsed(true);
+				return;
+			}
+		}*/
 
 		break;
 	}
@@ -146,7 +161,7 @@ void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 }
 
 
-int main(int, const char*const*)
+int main(int, const char* const*)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #ifndef OFFLINE_EXECUTION 
@@ -155,7 +170,7 @@ int main(int, const char*const*)
 #else
 	static const PxU32 frameCount = 100;
 	initPhysics(false);
-	for(PxU32 i=0; i<frameCount; i++)
+	for (PxU32 i = 0; i < frameCount; i++)
 		stepPhysics(false);
 	cleanupPhysics(false);
 #endif

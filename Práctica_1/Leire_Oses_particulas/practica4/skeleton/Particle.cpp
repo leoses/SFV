@@ -28,3 +28,13 @@ void Particle::move(float t)
 	rItem->transform = &trans;
 }
 
+void Particle::addTime(double t)noexcept
+{
+	time_ += t;
+}
+
+void Particle::resetTime()noexcept
+{
+	time_ = 0;
+}
+
