@@ -8,7 +8,7 @@ using namespace physx;
 
 class Particle 
 {
-private:
+protected:
     //VECTORES
     PxVec3 position_;
     PxVec3 velocity_;
@@ -26,10 +26,12 @@ private:
     PxTransform trans;
     //Geometría de la partícula
     PxSphereGeometry* geo;
+    //Color de la partícula
+    Vector4 color_;
 
     //TIEMPO DE VIDA DE LA PARTÍCULA
-    const double LIFE_TIME = 5;
-    double time_ = 0;
+    float LIFE_TIME = 0;
+    float time_ = 0;
 
     //Booleano para determinar si la partícula esta activa
     //Por defecto se crean siempre desactivadas
@@ -37,12 +39,13 @@ private:
 
 
 public:
-    Particle(PxVec3 pos,float damp = 0.5, float iMass = 0.3):
+    Particle(PxVec3 pos = Vector3(0,0,0),float damp = 0.5, float iMass = 0.3, Vector4 color = Vector4(255, 0, 0, 1)):
         position_(pos), 
         velocity_(0,0,0), 
         acceleration_(0, 0, 0),
         damping(damp),
-        inverse_mass(iMass)
+        inverse_mass(iMass),
+        color_(color)
     {
         geo = new PxSphereGeometry(5);
     }
@@ -61,6 +64,7 @@ public:
     const PxVec3 getAcceleration() { return acceleration_; }
     const double isDead() noexcept { return time_ > LIFE_TIME; }
     const bool isActive()noexcept { return isActive_; }
+    const Vector4 getColor() { return color_; }
 #pragma endregion
 
 #pragma region Setters
@@ -68,6 +72,10 @@ public:
     inline void setVelocity(const PxVec3& newVel) { velocity_ = newVel; }
     inline void setAcceleration(const PxVec3& newAcc) { acceleration_ = newAcc; }
     inline void setActive (bool active) noexcept{ isActive_ = active; }
+    inline void setMass(float newmass)noexcept { inverse_mass = 1 / newmass;}
+    inline void setDamping(float damp)noexcept { damping = damp; }
+    inline void setLifeTime(float lifeTime) noexcept { LIFE_TIME = lifeTime; }
+    inline void setColor(const Vector4& newColor) noexcept { color_ = newColor; }
 #pragma endregion
 
 

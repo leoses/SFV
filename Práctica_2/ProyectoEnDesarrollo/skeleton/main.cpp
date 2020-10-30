@@ -10,7 +10,7 @@
 
 //Includes propios
 #include "checkML.h" //Basura
-#include "ParticleSystem.h"
+#include "FireworkSystem.h"
 
 
 using namespace physx;
@@ -31,7 +31,7 @@ PxScene* gScene = NULL;
 ContactReportCallback gContactReportCallback;
 
 //Añadimos aquí como variables globales los elementos necesarios para la practica
-ParticleSystem* pSistem;
+FireworkSystem* fSistem;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -59,7 +59,7 @@ void initPhysics(bool interactive)
 	// ------------------------------------------------------
 
 	//Add Customed Code here
-	pSistem = new ParticleSystem(Vector3(0,50,-30), 0.3);
+	fSistem = new FireworkSystem(Vector3(0,50,-30));
 }
 
 
@@ -73,7 +73,7 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	pSistem->update(t);
+	fSistem->update(t);
 }
 
 // Function to clean data
@@ -82,7 +82,7 @@ void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
 
-	delete pSistem;
+	delete fSistem;
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();

@@ -10,7 +10,7 @@ ParticleSystem::ParticleSystem(Vector3 posSystem_, float timeBetweenParticles)
 	}
 
 	//inicializar generador randoms
-	srand((unsigned int)time(NULL));
+	srand(time(NULL));
 }
 
 ParticleSystem::~ParticleSystem()
@@ -55,7 +55,7 @@ void ParticleSystem::addParticles(float t)
 		while (!found && it != listParticles.end()) {
 			if (!(*it)->isActive()) {
 
-				float x = (float(rand() % 100) * 1.25)-80;
+				float x = (float(rand() % 100) * 1.25) - 80;
 				float y = (float(rand() % 100) * 1.25);
 				float z = (float(rand() % 100) * 1.25) - 80;
 

@@ -43,7 +43,7 @@ void Particle::resetTime()noexcept
 void Particle::activateParticle()
 {
 	setActive(true);
-	rItem = new RenderItem(CreateShape(*geo), &PxTransform(position_), Vector4(255, 0, 0, 1));
+	rItem = new RenderItem(CreateShape(*geo), &PxTransform(position_), color_);
 }
 
 void Particle::desactivateParticle()
