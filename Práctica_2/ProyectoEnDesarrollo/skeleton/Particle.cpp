@@ -25,9 +25,8 @@ void Particle::move(float t)
 	// Update position
 	position_ += velocity_ * t;
 
-	//Modificar el transform del renderItem
+	//Modificar el transform
 	trans = PxTransform(position_);
-	rItem->transform = &trans;
 }
 
 void Particle::addTime(double t)noexcept
@@ -43,7 +42,13 @@ void Particle::resetTime()noexcept
 void Particle::activateParticle()
 {
 	setActive(true);
-	rItem = new RenderItem(CreateShape(*geo), &PxTransform(position_), color_);
+
+	auto shape = CreateShape(*geo);
+	rItem = new RenderItem(shape, &PxTransform(position_), color_);
+	shape->release();
+
+	trans = PxTransform(position_);
+	rItem->transform = &trans;
 }
 
 void Particle::desactivateParticle()

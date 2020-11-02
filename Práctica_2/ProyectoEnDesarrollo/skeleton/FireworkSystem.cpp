@@ -14,9 +14,6 @@ FireworkSystem::FireworkSystem(Vector3 initialSystemPos)
 
 	//Creamos el primer fuego artificial
 	createFirework(0);
-
-	
-
 }
 
 FireworkSystem::~FireworkSystem()
@@ -91,6 +88,28 @@ void FireworkSystem::initFireworkRules()
 			Vector3(-40,60,-40), Vector3(40,80,40), // velocity range
 			0.1, // damping
 			Vector4(255,0, 0, 1),//color
+	});
+
+	rules.at(2).payloads.push_back(
+		{ 3, 3 }); //3 elementos del tipo 3
+
+	rules.at(2).payloads.push_back(
+		{ 4, 5 }); //5 elementos del tipo 4
+
+	rules.push_back({ //at(3)
+			3, // type
+			1.0f, 3.0f, // age range
+			Vector3(-40,40,-40), Vector3(40,60,40), // velocity range
+			0.1, // damping
+			Vector4(0,255, 255, 1),//color
+		});
+
+	rules.push_back({ //at(4)
+			4, // type
+			2.0f, 5.0f, // age range
+			Vector3(-40,80,-40), Vector3(40,100,40), // velocity range
+			0.1, // damping
+			Vector4(255,0, 255, 1),//color
 	});
 }
 
