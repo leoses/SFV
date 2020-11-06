@@ -1,0 +1,75 @@
+﻿  callbacks.cpp
+  Firework.cpp
+  FireworkSystem.cpp
+  main.cpp
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(329,1): warning C5220: "physx::PxLightCpuTask::mRefCount": un miembro de datos no estático con un tipo calificado volátil ya no implica
+           que los constructores de copia/movimiento generados por el compilador y los operadores de asignación de copia o movimiento no sean triviales (compilando archivo de origen main.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(326): message : vea la declaración de 'physx::PxLightCpuTask::mRefCount' (compilando archivo de origen main.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(329,1): warning C5220: "physx::PxLightCpuTask::mRefCount": un miembro de datos no estático con un tipo calificado volátil ya no implica
+           que los constructores de copia/movimiento generados por el compilador y los operadores de asignación de copia o movimiento no sean triviales (compilando archivo de origen Firework.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(326): message : vea la declaración de 'physx::PxLightCpuTask::mRefCount' (compilando archivo de origen Firework.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(329,1): warning C5220: "physx::PxLightCpuTask::mRefCount": un miembro de datos no estático con un tipo calificado volátil ya no implica
+           que los constructores de copia/movimiento generados por el compilador y los operadores de asignación de copia o movimiento no sean triviales (compilando archivo de origen FireworkSystem.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(326): message : vea la declaración de 'physx::PxLightCpuTask::mRefCount' (compilando archivo de origen FireworkSystem.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(329,1): warning C5220: "physx::PxLightCpuTask::mRefCount": un miembro de datos no estático con un tipo calificado volátil ya no implica
+           que los constructores de copia/movimiento generados por el compilador y los operadores de asignación de copia o movimiento no sean triviales (compilando archivo de origen callbacks.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(326): message : vea la declaración de 'physx::PxLightCpuTask::mRefCount' (compilando archivo de origen callbacks.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\FireworkSystem.h(85,1): warning C4626: 'FireworkSystem': el operador de asignaciones se definió implícitamente como eliminado (compilando archivo de origen main.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\FireworkSystem.h(85,1): warning C4626: 'FireworkSystem': el operador de asignaciones se definió implícitamente como eliminado (compilando archivo de origen FireworkSystem.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\FireworkSystem.cpp(49,23): warning C4018: '<': no coinciden signed/unsigned
+  Particle.cpp
+  ParticleSystem.cpp
+  RenderUtils.cpp
+  Camera.cpp
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Camera.cpp(88,19): warning C5219: conversión implícita de "int" a "float"; posible pérdida de datos
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Camera.cpp(90,19): warning C5219: conversión implícita de "int" a "float"; posible pérdida de datos
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(329,1): warning C5220: "physx::PxLightCpuTask::mRefCount": un miembro de datos no estático con un tipo calificado volátil ya no implica
+           que los constructores de copia/movimiento generados por el compilador y los operadores de asignación de copia o movimiento no sean triviales (compilando archivo de origen ParticleSystem.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(326): message : vea la declaración de 'physx::PxLightCpuTask::mRefCount' (compilando archivo de origen ParticleSystem.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(329,1): warning C5220: "physx::PxLightCpuTask::mRefCount": un miembro de datos no estático con un tipo calificado volátil ya no implica
+           que los constructores de copia/movimiento generados por el compilador y los operadores de asignación de copia o movimiento no sean triviales (compilando archivo de origen Particle.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(326): message : vea la declaración de 'physx::PxLightCpuTask::mRefCount' (compilando archivo de origen Particle.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\foundation\PxVec3.h(303): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\foundation\PxVec3.h(302) : nota: el intervalo "m" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\foundation\PxVec3.h(303) : nota: suministra la llamada en esta línea
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\foundation\PxVec3.h(293): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\foundation\PxVec3.h(293) : nota: el intervalo "m" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\foundation\PxVec3.h(293) : nota: suministra la llamada en esta línea
+  Render.cpp
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(329,1): warning C5220: "physx::PxLightCpuTask::mRefCount": un miembro de datos no estático con un tipo calificado volátil ya no implica
+           que los constructores de copia/movimiento generados por el compilador y los operadores de asignación de copia o movimiento no sean triviales (compilando archivo de origen Render\Render.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(326): message : vea la declaración de 'physx::PxLightCpuTask::mRefCount' (compilando archivo de origen Render\Render.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(329,1): warning C5220: "physx::PxLightCpuTask::mRefCount": un miembro de datos no estático con un tipo calificado volátil ya no implica
+           que los constructores de copia/movimiento generados por el compilador y los operadores de asignación de copia o movimiento no sean triviales (compilando archivo de origen RenderUtils.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\task\PxTask.h(326): message : vea la declaración de 'physx::PxLightCpuTask::mRefCount' (compilando archivo de origen RenderUtils.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\ParticleSystem.h(41,1): warning C4626: 'ParticleSystem': el operador de asignaciones se definió implícitamente como eliminado (compilando archivo de origen ParticleSystem.cpp)
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Particle.cpp(47): warning C4238: se ha utilizado una extensión no estándar: valor-R de clase utilizado como valor L
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Particle.cpp(47,44): warning C4238: se ha utilizado una extensión no estándar: valor-R de clase utilizado como valor L
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(341): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(336) : nota: el intervalo "j" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(341) : nota: suministra la llamada en esta línea
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(334): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(329) : nota: el intervalo "i" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(334) : nota: suministra la carga de memoria en esta línea
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(151): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(144) : nota: el intervalo "" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(151) : nota: suministra la llamada en esta línea
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(136): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(121) : nota: el intervalo "nbPolys" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(136) : nota: suministra la llamada en esta línea
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(124): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(121) : nota: el intervalo "nbPolys" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(124) : nota: suministra la carga de memoria en esta línea
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(208): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(201) : nota: el intervalo "" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(208) : nota: suministra la llamada en esta línea
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(195): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(181) : nota: el intervalo "triangleCount" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(195) : nota: suministra la llamada en esta línea
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(189): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(181) : nota: el intervalo "triangleCount" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\Render\Render.cpp(189) : nota: suministra la llamada en esta línea
+C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\foundation\PxVec3.h(303): warning C5045: El compilador insertará la mitigación de Spectre para la carga de memoria si se especificó el modificador /Qspectre
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\foundation\PxVec3.h(302) : nota: el intervalo "m" del índice se comprobó por comparación en esta línea
+  C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\common\PhysX-3.4\PxShared\include\foundation\PxVec3.h(303) : nota: suministra la llamada en esta línea
+  game.vcxproj -> C:\Users\Usuario\Desktop\SFV\Práctica_2\ProyectoEnDesarrollo\skeleton\../bin/practica1DEBUG.exe
