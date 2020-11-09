@@ -3,6 +3,7 @@
 #include <PxPhysicsAPI.h>
 
 #include <vector>
+#include <list>
 
 #include "core.hpp"
 #include "RenderUtils.hpp"
@@ -12,6 +13,7 @@
 #include "checkML.h" //Basura
 #include "FireworkSystem.h"
 #include "ParticleForceRegistry.h"
+#include "ParticleSystem.h"
 
 
 using namespace physx;
@@ -33,8 +35,43 @@ ContactReportCallback gContactReportCallback;
 
 //Añadimos aquí como variables globales los elementos necesarios para la practica
 FireworkSystem* fireworkSystem1;
-FireworkSystem* fireworkSystem2;
+//FireworkSystem* fireworkSystem2;
 ParticleForceRegistry* forceSystem;
+
+//NUMERO MÁXIMO DE PARTICULAS
+constexpr int MAX_PARTICLES = 1000;
+
+//lista con las partículas creadas
+std::list<Particle*> listParticles;
+//ParticleSystem* particleSystem;
+
+Particle* findUnusedParticle() {
+	bool found = false;
+	auto it = listParticles.begin();
+
+	while (!found && it != listParticles.end()) {
+		if (!(*it)->isActive())found = true;
+		
+		else ++it;
+	}
+
+	if (found) return (*it);
+	else return nullptr;
+}
+
+void updateParticles(float t)
+{
+	//Actualizacion de posiciones
+	for (Particle* p : listParticles) {
+		if (!p->isActive())continue;
+
+		p->addTime(t);
+
+		//Si la partícula ya ha vivido el tiempo máximo la dejamos de renderizar
+		if (p->isDead()) p->desactivateParticle();
+		else  p->integrate(t);
+	}
+}
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -63,8 +100,16 @@ void initPhysics(bool interactive)
 
 	//Add Customed Code here
 	forceSystem = new ParticleForceRegistry();
+	//particleSystem = new ParticleSystem(Vector3(0,0,0));
+
+
+	/*for (int i = 0; i < MAX_PARTICLES; i++) {
+		Particle* p = new Particle();
+		p->setLifeTime(4.0);
+		listParticles.push_back(p);
+	}*/
 	fireworkSystem1 = new FireworkSystem(forceSystem, Vector3(0,25,0),Vector3(0,-50,0));
-	fireworkSystem2 = new FireworkSystem(forceSystem, Vector3(0,25,0), Vector3(0,20,0));
+	//fireworkSystem2 = new FireworkSystem(forceSystem, Vector3(0,25,0), Vector3(0,20,0));
 
 }
 
@@ -80,8 +125,11 @@ void stepPhysics(bool interactive, double t)
 	gScene->fetchResults(true);
 
 	forceSystem->updateForces(t);
+	//particleSystem->update(t);
+	updateParticles(t);
+	
 	fireworkSystem1->update(t);
-	fireworkSystem2->update(t);
+	//fireworkSystem2->update(t);*/
 }
 
 // Function to clean data
@@ -91,8 +139,14 @@ void cleanupPhysics(bool interactive)
 	PX_UNUSED(interactive);
 
 	delete fireworkSystem1;
-	delete fireworkSystem2;
+	//delete fireworkSystem2;
+	//delete particleSystem;
 	delete forceSystem;
+
+	for (Particle* p : listParticles) {
+		delete p;
+		p = nullptr;
+	}
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();

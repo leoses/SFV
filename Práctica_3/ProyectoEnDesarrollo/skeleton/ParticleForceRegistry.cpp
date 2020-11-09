@@ -45,7 +45,7 @@ void ParticleForceRegistry::remove(Particle* particle)
 	}
 }
 
-void ParticleForceRegistry::clear()
+void ParticleForceRegistry::clear()noexcept
 {
 	registrations.clear();
 }

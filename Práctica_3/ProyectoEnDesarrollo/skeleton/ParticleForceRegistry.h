@@ -44,9 +44,9 @@ public:
 	// Remove association of all ParticleForceGenerator from one particle;
 	void remove(Particle* particle);
 	// Removes all associations. Particle and Generators won't be deleted
-	void clear();
+	void clear() noexcept;
 	// Update all the generators in the registry
-	void updateForces(float t);
+	virtual void updateForces(float t);
 
 };
 
