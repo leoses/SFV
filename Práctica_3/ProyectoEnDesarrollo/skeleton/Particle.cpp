@@ -53,8 +53,13 @@ void Particle::activateParticle()
 
 void Particle::desactivateParticle()
 {
+	setVelocity(Vector3(0, 0, 0));
+	setAcceleration(Vector3(0, 0, 0));
+	clearForce();
+
 	setActive(false);
 	resetTime();
+
 	rItem->release();
 	rItem = nullptr;
 }

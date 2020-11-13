@@ -15,7 +15,6 @@
 #include "ParticleForceRegistry.h"
 #include "ParticleSystem.h"
 
-
 using namespace physx;
 
 PxDefaultAllocator		gAllocator;
@@ -23,7 +22,6 @@ PxDefaultErrorCallback	gErrorCallback;
 
 PxFoundation* gFoundation = NULL;
 PxPhysics* gPhysics = NULL;
-
 
 PxMaterial* gMaterial = NULL;
 
@@ -34,16 +32,29 @@ PxScene* gScene = NULL;
 ContactReportCallback gContactReportCallback;
 
 //Añadimos aquí como variables globales los elementos necesarios para la practica
-FireworkSystem* fireworkSystem1;
+//FireworkSystem* fireworkSystem1;
 //FireworkSystem* fireworkSystem2;
-ParticleForceRegistry* forceSystem;
+ParticleSystem* particleSystem = nullptr;
 
 //NUMERO MÁXIMO DE PARTICULAS
 constexpr int MAX_PARTICLES = 1000;
 
 //lista con las partículas creadas
 std::list<Particle*> listParticles;
-//ParticleSystem* particleSystem;
+
+//Controlador de fuerzas
+ParticleForceRegistry* forceSystem = nullptr;
+ParticleGravity* gravedad_ = nullptr;
+ParticleWind* wind_ = nullptr;
+
+
+void addParticleToForceSystem(Particle* particle, ParticleForceGenerator* g) {
+	if(forceSystem != nullptr)forceSystem->add(particle, g);
+}
+
+void removeParticleFromForceSystem(Particle* particle, ParticleForceGenerator* g) {
+	if (forceSystem != nullptr)forceSystem->remove(particle, g);
+}
 
 Particle* findUnusedParticle() {
 	bool found = false;
@@ -55,8 +66,17 @@ Particle* findUnusedParticle() {
 		else ++it;
 	}
 
-	if (found) return (*it);
+	if (found)return (*it);
 	else return nullptr;
+}
+
+void createParticle(Vector3 pos, Vector3 vel) {
+	Particle* p = findUnusedParticle();
+	if (p != nullptr) {
+		p->setPosition(pos);
+		p->setVelocity(vel);
+		p->activateParticle();
+	}
 }
 
 void updateParticles(float t)
@@ -68,8 +88,8 @@ void updateParticles(float t)
 		p->addTime(t);
 
 		//Si la partícula ya ha vivido el tiempo máximo la dejamos de renderizar
-		if (p->isDead()) p->desactivateParticle();
-		else  p->integrate(t);
+		if (p->isDead()) p->desactivateParticle(); 
+		else p->integrate(t);
 	}
 }
 
@@ -100,15 +120,22 @@ void initPhysics(bool interactive)
 
 	//Add Customed Code here
 	forceSystem = new ParticleForceRegistry();
-	//particleSystem = new ParticleSystem(Vector3(0,0,0));
+	gravedad_ = new ParticleGravity(Vector3(0, -10, 0));
+	wind_ = new ParticleWind(Vector3(0, 0, 120), Vector3(0, 50, 0), 15);
+
+	particleSystem = new ParticleSystem(Vector3(0,0,0),0.005);
 
 
-	/*for (int i = 0; i < MAX_PARTICLES; i++) {
+	for (int i = 0; i < MAX_PARTICLES; i++) {
 		Particle* p = new Particle();
 		p->setLifeTime(4.0);
 		listParticles.push_back(p);
-	}*/
-	fireworkSystem1 = new FireworkSystem(forceSystem, Vector3(0,25,0),Vector3(0,-50,0));
+
+		//Relacionamos las particulas creadas con los generadores de fuerzas
+		if (gravedad_ != nullptr)addParticleToForceSystem(p, gravedad_);
+		if (wind_ != nullptr) addParticleToForceSystem(p, wind_);
+	}
+	//fireworkSystem1 = new FireworkSystem(forceSystem, Vector3(0,25,0),Vector3(0,-50,0));
 	//fireworkSystem2 = new FireworkSystem(forceSystem, Vector3(0,25,0), Vector3(0,20,0));
 
 }
@@ -125,10 +152,10 @@ void stepPhysics(bool interactive, double t)
 	gScene->fetchResults(true);
 
 	forceSystem->updateForces(t);
-	//particleSystem->update(t);
+	particleSystem->update(t);
 	updateParticles(t);
 	
-	fireworkSystem1->update(t);
+	//fireworkSystem1->update(t);
 	//fireworkSystem2->update(t);*/
 }
 
@@ -138,10 +165,12 @@ void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
 
-	delete fireworkSystem1;
+	//delete fireworkSystem1;
 	//delete fireworkSystem2;
-	//delete particleSystem;
 	delete forceSystem;
+	delete particleSystem;
+	delete gravedad_;
+	delete wind_;
 
 	for (Particle* p : listParticles) {
 		delete p;

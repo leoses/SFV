@@ -49,7 +49,7 @@ public:
         inverse_mass(iMass),
         color_(color)
     {
-        geo = new PxSphereGeometry(5);
+        geo = new PxSphereGeometry(1);
     }
     ~Particle();
 

@@ -44,6 +44,7 @@ void FireworkSystem::update(float t)
 	for (Firework* p : fireworkElements) {
 		if (!p->isActive())continue;
 
+		p->addTime(t);
 		//Si el firework ha vivido el tiempo suficiente
 		//"Eliminamos" el padre y según el payload que toque, creamos tantos elementos queramos
 		if (p->isDead()) {
@@ -58,10 +59,7 @@ void FireworkSystem::update(float t)
 			forceController->remove(p);
 			p->desactivateParticle();
 		}
-		else {
-			p->integrate(t);
-			p->addTime(t);
-		}
+		else p->integrate(t);
 	}
 }
 
@@ -107,7 +105,7 @@ void FireworkSystem::initFireworkRules()
 			Vector3(-40,40,-40), Vector3(40,60,40), // velocity range
 			0.1, // damping
 			Vector4(0,255, 255, 1),//color
-		});
+	});
 
 	rules.push_back({ //at(4)
 			4, // type

@@ -53,10 +53,31 @@ void ParticleForceRegistry::clear()noexcept
 void ParticleForceRegistry::updateForces(float t)
 {
 	for (ParticleForceRegistration p : registrations) {
-		//if (p.particle->isActive())
 		p.fg->updateForce(p.particle, t);
-		//else {
-		//	remove(p.particle, p.fg);
-		//}
 	}
+}
+
+ParticleWind::ParticleWind(Vector3 windDirection, Vector3 center, float radius):windDirection_(windDirection), center_(center), radius_(radius) {
+	PxSphereGeometry* geo = new PxSphereGeometry(radius);
+	auto shape = CreateShape(*geo);
+	t = PxTransform(center);
+	volume = new RenderItem(shape, &t, Vector4(0.0, 0.0, 0.0, 0.0));
+	volume->transform = &t;
+	shape->release();
+	delete geo;
+}
+
+void ParticleWind::updateForce(Particle* particle, float t)
+{		
+	if (particleInsideVolume(particle->getPosition())){
+		particle->addForce(windDirection_* particle->getMass());
+	}
+}
+
+bool ParticleWind::particleInsideVolume(Vector3 position)
+{
+	float distance = abs(Vector3(position - center_).magnitude());
+
+	if (distance < radius_) return true;
+	else return false;
 }

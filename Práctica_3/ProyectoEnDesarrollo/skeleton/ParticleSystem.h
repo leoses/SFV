@@ -3,10 +3,11 @@
 #include <list>
 #include <cstdlib>
 #include <ctime>
+#include "ParticleForceRegistry.h"
 
 using namespace std;
 
-extern Particle* findUnusedParticle();
+extern void createParticle(Vector3 pos, Vector3 vel);
 
 class ParticleSystem
 {
@@ -33,7 +34,6 @@ protected:
 	//Metodo que maneja la creacion de particulas
 	void addParticles(float t);
 
-	void CreateParticle();
 
 };
 

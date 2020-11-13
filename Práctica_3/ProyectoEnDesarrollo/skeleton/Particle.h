@@ -49,7 +49,7 @@ public:
         inverse_mass(iMass),
         color_(color)
     {
-        geo = new PxSphereGeometry(5);
+        geo = new PxSphereGeometry(1);
     }
     ~Particle();
 
@@ -70,6 +70,7 @@ public:
     const Vector4 getColor() { return color_; }
     const float getInverseMass() noexcept { return inverse_mass; }
     const float getMass()noexcept { return 1 / inverse_mass; }
+    const float getAccelerationY() { return velocity_.y; }
 #pragma endregion
 
 #pragma region Setters

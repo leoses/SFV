@@ -21,6 +21,25 @@ public:
 	virtual void updateForce(Particle* particle, float t)override;
 };
 
+class ParticleWind : public ParticleForceGenerator
+{
+    //Direccion del viento
+	Vector3 windDirection_;
+	//RenderItem
+	PxTransform t ;
+	RenderItem* volume = nullptr;
+	//Elementos que determinan el volumen de la esfera
+	Vector3 center_;
+	float radius_;
+
+
+public:
+	ParticleWind(Vector3 windDirection, Vector3 center = Vector3(0, 0, 0), float radius = 10);
+	virtual ~ParticleWind() { volume->release(); }
+	virtual void updateForce(Particle* particle, float t)override;
+	bool particleInsideVolume(Vector3 position);
+};
+
 
 class ParticleForceRegistry
 {
