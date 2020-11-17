@@ -13,6 +13,7 @@ public:
 //Clase para el manejo de la gravedad de las particulas
 class ParticleGravity : public ParticleForceGenerator
 {
+private:
 	// Acceleration for gravity
 	Vector3 g;
 public:
@@ -21,23 +22,56 @@ public:
 	virtual void updateForce(Particle* particle, float t)override;
 };
 
-class ParticleWind : public ParticleForceGenerator
-{
-    //Direccion del viento
-	Vector3 windDirection_;
+class ParticleForceInsideASphere : public ParticleForceGenerator {
+protected:
 	//RenderItem
-	PxTransform t ;
+	PxTransform t;
 	RenderItem* volume = nullptr;
+	PxSphereGeometry* geo = nullptr;
+
 	//Elementos que determinan el volumen de la esfera
 	Vector3 center_;
 	float radius_;
 
+public:
+	ParticleForceInsideASphere(Vector3 center = Vector3(0, 0, 0), float radius = 10);
+	virtual ~ParticleForceInsideASphere() { if(volume != nullptr) volume->release(); delete geo;}
+
+	bool particleInsideVolume(Vector3 position);
+	void createVolume();
+};
+
+class ParticleWind : public ParticleForceInsideASphere
+{
+private:
+	//Direccion del viento
+	Vector3 windDirection_;
 
 public:
 	ParticleWind(Vector3 windDirection, Vector3 center = Vector3(0, 0, 0), float radius = 10);
-	virtual ~ParticleWind() { volume->release(); }
+	virtual ~ParticleWind() {}
 	virtual void updateForce(Particle* particle, float t)override;
-	bool particleInsideVolume(Vector3 position);
+};
+
+class ParticleExplosion :public ParticleForceInsideASphere {
+private:
+	const float LIFETIME = 1.0;
+	float time = 0.0;
+	int forceModifier_ = 1;
+	bool active_ = false;
+
+public:
+	ParticleExplosion(int forceModifier,Vector3 center = Vector3(0, 0, 0), float radius = 10);
+	virtual ~ParticleExplosion() {}
+
+	virtual void updateForce(Particle* particle, float t)override;
+	void updateLifeTime(float t);
+	void activateExplosion(Vector3 newCenter);
+
+
+	//Getters
+	const bool isActive() noexcept { return active_; }
+
 };
 
 

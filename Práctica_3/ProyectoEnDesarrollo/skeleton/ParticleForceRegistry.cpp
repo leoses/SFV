@@ -57,14 +57,31 @@ void ParticleForceRegistry::updateForces(float t)
 	}
 }
 
-ParticleWind::ParticleWind(Vector3 windDirection, Vector3 center, float radius):windDirection_(windDirection), center_(center), radius_(radius) {
-	PxSphereGeometry* geo = new PxSphereGeometry(radius);
+ParticleForceInsideASphere::ParticleForceInsideASphere(Vector3 center, float radius) :ParticleForceGenerator(), center_(center), radius_(radius)
+{
+	geo = new PxSphereGeometry(radius);
+}
+
+bool ParticleForceInsideASphere::particleInsideVolume(Vector3 position)
+{
+	float distance = abs(Vector3(position - center_).magnitude());
+
+	if (distance < radius_) return true;
+	else return false;
+}
+
+void ParticleForceInsideASphere::createVolume()
+{
 	auto shape = CreateShape(*geo);
-	t = PxTransform(center);
+	t = PxTransform(center_);
 	volume = new RenderItem(shape, &t, Vector4(0.0, 0.0, 0.0, 0.0));
 	volume->transform = &t;
 	shape->release();
-	delete geo;
+}
+
+ParticleWind::ParticleWind(Vector3 windDirection, Vector3 center, float radius):
+	ParticleForceInsideASphere(center, radius), windDirection_(windDirection) {
+	createVolume();
 }
 
 void ParticleWind::updateForce(Particle* particle, float t)
@@ -74,10 +91,37 @@ void ParticleWind::updateForce(Particle* particle, float t)
 	}
 }
 
-bool ParticleWind::particleInsideVolume(Vector3 position)
+void ParticleExplosion::activateExplosion(Vector3 newCenter)
 {
-	float distance = abs(Vector3(position - center_).magnitude());
+	active_ = true;
+	center_ = newCenter;
+	createVolume();
+}
 
-	if (distance < radius_) return true;
-	else return false;
+ParticleExplosion::ParticleExplosion(int forceModifier, Vector3 center, float radius):
+	ParticleForceInsideASphere(center, radius), forceModifier_(forceModifier){}
+
+void ParticleExplosion::updateForce(Particle* particle, float t)
+{
+	if (!particle->isActive() || !active_ || !particleInsideVolume(particle->getPosition()))return;
+
+	Vector3 dir = Vector3(center_-particle->getPosition());
+	float distance = abs(dir.magnitude());
+
+	particle->addForce((radius_ - distance) * (-dir)*forceModifier_);
+
+}
+
+void ParticleExplosion::updateLifeTime(float t)
+{
+	if (!isActive())return;
+
+	time += t;
+	if (time >= LIFETIME) {
+		active_ = false;
+		time = 0.0;
+		volume->release();
+		volume = nullptr;
+	}
+
 }
