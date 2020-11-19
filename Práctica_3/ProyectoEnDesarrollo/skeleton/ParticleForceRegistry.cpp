@@ -64,7 +64,7 @@ ParticleForceInsideASphere::ParticleForceInsideASphere(Vector3 center, float rad
 
 bool ParticleForceInsideASphere::particleInsideVolume(Vector3 position)
 {
-	float distance = abs(Vector3(position - center_).magnitude());
+	float distance = Vector3(position - center_).magnitude();
 
 	if (distance < radius_) return true;
 	else return false;
@@ -91,7 +91,7 @@ void ParticleWind::updateForce(Particle* particle, float t)
 	}
 }
 
-void ParticleExplosion::activateExplosion(Vector3 newCenter)
+void ParticleExplosion::activateExplosion(const Vector3 & newCenter)
 {
 	active_ = true;
 	center_ = newCenter;
@@ -106,9 +106,11 @@ void ParticleExplosion::updateForce(Particle* particle, float t)
 	if (!particle->isActive() || !active_ || !particleInsideVolume(particle->getPosition()))return;
 
 	Vector3 dir = Vector3(center_-particle->getPosition());
-	float distance = abs(dir.magnitude());
+	float distance = dir.magnitude();
 
-	particle->addForce((radius_ - distance) * (-dir)*forceModifier_);
+	Vector3 acceleration = ((radius_ - distance) * (-dir.getNormalized()) * forceModifier_);
+
+	particle->addForce(acceleration*particle->getMass());
 
 }
 

@@ -120,7 +120,7 @@ void initPhysics(bool interactive)
 	forceSystem = new ParticleForceRegistry();
 	gravedad_ = new ParticleGravity(Vector3(0, -10, 0));
 	//wind_ = new ParticleWind(Vector3(0, 0, 120), Vector3(0, 50, 0), 15);
-	explosion_ = new ParticleExplosion(50, Vector3(0,50,0), 25);
+	explosion_ = new ParticleExplosion(200, Vector3(0,50,0), 25);
 	particleSystem = new ParticleSystem(Vector3(0,0,0), 0.005);
 
 

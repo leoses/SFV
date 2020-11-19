@@ -66,7 +66,7 @@ public:
 
 	virtual void updateForce(Particle* particle, float t)override;
 	void updateLifeTime(float t);
-	void activateExplosion(Vector3 newCenter);
+	void activateExplosion(const Vector3& newCenter);
 
 
 	//Getters
