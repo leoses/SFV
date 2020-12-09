@@ -109,7 +109,7 @@ public:
 class ParticleAnchoredSpring : public ParticleForceGenerator
 {
 	// Position of the other end of the spring
-	Vector3 anchor;
+	Vector3* anchor;
 	// Elasticity constant
 	float k;
 	float restLength;
@@ -118,7 +118,7 @@ class ParticleAnchoredSpring : public ParticleForceGenerator
 	PxTransform t;
 
 public:
-	ParticleAnchoredSpring(Vector3 _anchor, float _k, float _restLength);
+	ParticleAnchoredSpring(Vector3* _anchor, float _k, float _restLength);
 	virtual ~ParticleAnchoredSpring() { boxRenderItem_->release(); delete box;}
 	virtual void updateForce(Particle* particle, float t) override;
 	void updateSpringConstant(const float increment);

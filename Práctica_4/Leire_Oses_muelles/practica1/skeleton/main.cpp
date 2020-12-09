@@ -126,7 +126,7 @@ void initPhysics(bool interactive)
 	//wind_ = new ParticleWind(Vector3(0, 0, 120), Vector3(0, 50, 0), 15);
 	explosion_ = new ParticleExplosion(200, Vector3(0,50,0), 25);
 	particleSystem = new ParticleSystem(Vector3(0,0,0), 0.005);
-	spring_ = new ParticleAnchoredSpring(springPos_, 2.5,2);
+	spring_ = new ParticleAnchoredSpring(&springPos_, 2.5,2);
 
 
 	//for (int i = 0; i < MAX_PARTICLES; i++) {

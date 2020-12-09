@@ -128,18 +128,18 @@ void ParticleExplosion::updateLifeTime(float t)
 
 }
 
-ParticleAnchoredSpring::ParticleAnchoredSpring(Vector3 _anchor, float _k, float _restLength) :
+ParticleAnchoredSpring::ParticleAnchoredSpring(Vector3* _anchor, float _k, float _restLength) :
 	ParticleForceGenerator(), anchor(_anchor), k(_k), restLength(_restLength)
 {
 	box = new PxBoxGeometry(5, 5, 5);
-	t = PxTransform(anchor);
+	t = PxTransform(*anchor);
 	boxRenderItem_ = new RenderItem(CreateShape(*box), &t, Vector4(1.0, 0.0, 0.0, 1.0));
 }
 
 void ParticleAnchoredSpring::updateForce(Particle* particle, float t)
 {
 	Vector3 f = particle->getPosition();
-	f -= anchor;
+	f -= *anchor;
 	f *= -((f.normalize() - restLength) * k);
 	particle->addForce(f);
 }
