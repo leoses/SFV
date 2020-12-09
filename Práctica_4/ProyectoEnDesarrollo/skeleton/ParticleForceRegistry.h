@@ -123,7 +123,18 @@ public:
 	virtual void updateForce(Particle* particle, float t) override;
 	void updateSpringConstant(const float increment);
 };
+
+class ParticleSpring : public ParticleForceGenerator
+{
+	// The other particle the spring is attached to
+	Particle* other;
+	// Elasticity constant
+	float k;
+	float restLength;
+public:
+	ParticleSpring(Particle* _other, float _k, float _restLength);
+	virtual ~ParticleSpring() {};
+	virtual void updateForce(Particle* particle, float t)override;
+	void updateSpringConstant(const float increment);
+};
 #pragma endregion
-
-
-

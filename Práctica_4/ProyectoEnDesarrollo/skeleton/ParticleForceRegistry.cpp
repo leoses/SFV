@@ -148,3 +148,26 @@ void ParticleAnchoredSpring::updateSpringConstant(const float increment)
 {
 	if(k += increment > 0)k += increment;
 }
+
+ParticleSpring::ParticleSpring(Particle* _other, float _k, float _restLength):ParticleForceGenerator(), 
+other(_other), k(_k), restLength(_restLength){}
+
+void ParticleSpring::updateForce(Particle* particle, float t)
+{
+	// Calculate distance vector
+	Vector3 f = particle->getPosition();
+	f -= other->getPosition();
+	// Length
+	float length = f.normalize();
+	// Resulting force
+	float deltaL = (length - restLength);
+	float forceMagnitude = -k * deltaL;
+	f *= forceMagnitude;
+	particle->addForce(f);
+}
+
+void ParticleSpring::updateSpringConstant(const float increment)
+{
+	if (k += increment > 0)k += increment;
+}
+

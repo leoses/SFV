@@ -43,11 +43,14 @@ std::list<Particle*> listParticles;
 ParticleForceRegistry* forceSystem = nullptr;
 ParticleGravity* gravedad_ = nullptr;
 ParticleWind* wind_ = nullptr;
-ParticleAnchoredSpring* spring_ = nullptr;
+//ParticleAnchoredSpring* spring_ = nullptr;
 ParticleExplosion* explosion_ = nullptr;
+ParticleSpring* spring1_ = nullptr;
+ParticleSpring* spring2_ = nullptr;
 
-Vector3 springPos_ = Vector3(0, 50, 0);
-Particle* p = nullptr;
+Vector3 springPos_ = Vector3(20, 50, 0);
+Particle* p1 = nullptr;
+Particle* p2 = nullptr;
 
 
 void addParticleToForceSystem(Particle* particle, ParticleForceGenerator* g) {
@@ -123,12 +126,10 @@ void initPhysics(bool interactive)
 	//Add Customed Code here
 	forceSystem = new ParticleForceRegistry();
 	gravedad_ = new ParticleGravity(Vector3(0, -10, 0));
-	//wind_ = new ParticleWind(Vector3(0, 0, 120), Vector3(0, 50, 0), 15);
 	explosion_ = new ParticleExplosion(200, Vector3(0,50,0), 25);
 	particleSystem = new ParticleSystem(Vector3(0,0,0), 0.005);
-	spring_ = new ParticleAnchoredSpring(&springPos_, 2.5,2);
 
-
+#pragma region listaParticulas
 	//for (int i = 0; i < MAX_PARTICLES; i++) {
 	//	Particle* p = new Particle();
 	//	p->setLifeTime(4.0);
@@ -141,19 +142,25 @@ void initPhysics(bool interactive)
 	//}
 	//fireworkSystem1 = new FireworkSystem(forceSystem, Vector3(0,25,0),Vector3(0,-50,0));
 	//fireworkSystem2 = new FireworkSystem(forceSystem, Vector3(0,25,0), Vector3(0,20,0));
+#pragma endregion
 
-	//Caja para la práctica del muelle
+	p1 = new Particle();
+	p1->setPosition(springPos_);
+	p1->setVelocity(Vector3(10, 0, 0));
+	p1->activateParticle();
+	p2 = new Particle();
+	p2->setPosition(-springPos_);
+	p2->setVelocity(Vector3(-10, 0, 0));
+	p2->activateParticle();
 	
-	//shape->release();
+	spring1_ = new ParticleSpring(p2, 2.0f, 9);
+	spring2_ = new ParticleSpring(p1, 2.0f, 9);
 
-	p = new Particle();
-	p->setPosition(springPos_);
-	p->setVelocity(Vector3(0, 60, 0));
-	p->activateParticle();
-	addParticleToForceSystem(p, spring_);
-	addParticleToForceSystem(p, explosion_);
-	addParticleToForceSystem(p, gravedad_);
+	addParticleToForceSystem(p1, explosion_);
+	addParticleToForceSystem(p2, explosion_);
 
+	addParticleToForceSystem(p1, spring1_);
+	addParticleToForceSystem(p2, spring2_);
 }
 
 
@@ -171,10 +178,9 @@ void stepPhysics(bool interactive, double t)
 	forceSystem->updateForces(t);
 	particleSystem->update(t);
 	updateParticles(t);
-	p->integrate(t);
+	p1->integrate(t);
+	p2->integrate(t);
 	
-	//fireworkSystem1->update(t);
-	//fireworkSystem2->update(t);
 }
 
 // Function to clean data
@@ -183,20 +189,19 @@ void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
 
-	//delete fireworkSystem1;
-	//delete fireworkSystem2;
 	delete forceSystem;
 	delete particleSystem;
 	delete gravedad_;
-	//delete wind_;
 	delete explosion_;
-	delete spring_;
+	delete spring1_;
+	delete spring2_;
 
 	for (Particle* p : listParticles) {
 		delete p;
 		p = nullptr;
 	}
-	delete p;
+	delete p1;
+	delete p2;
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
@@ -228,12 +233,14 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	}
 	case '+':
 	{
-		spring_->updateSpringConstant(1);
+		spring1_->updateSpringConstant(1);
+		spring2_->updateSpringConstant(1);
 		break;
 	}
 	case '-':
 	{
-		spring_->updateSpringConstant(-1);
+		spring1_->updateSpringConstant(-1);
+		spring2_->updateSpringConstant(-1);
 		break;
 	}
 	default:
