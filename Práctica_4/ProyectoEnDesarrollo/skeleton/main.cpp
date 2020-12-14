@@ -39,22 +39,32 @@ constexpr int MAX_PARTICLES = 1000;
 //lista con las partículas creadas
 std::list<Particle*> listParticles;
 
+#pragma region Fuerzas
 //Controlador de fuerzas
 ParticleForceRegistry* forceSystem = nullptr;
 ParticleGravity* gravedad_ = nullptr;
 ParticleWind* wind_ = nullptr;
-//ParticleAnchoredSpring* spring_ = nullptr;
 ParticleExplosion* explosion_ = nullptr;
+#pragma endregion
+
+#pragma region Muelles
+//ParticleAnchoredSpring* spring_ = nullptr;
 ParticleSpring* spring1_ = nullptr;
 ParticleSpring* spring2_ = nullptr;
 
 Vector3 springPos_ = Vector3(20, 50, 0);
-Particle* p1 = nullptr;
-Particle* p2 = nullptr;
+Particle* p1_ = nullptr;
+Particle* p2_ = nullptr;
 
+Particle* pBuoyancy_ = nullptr;
+ParticleBuoyancy* buoyancySytem_ = nullptr;
+RenderItem* water_ = nullptr;
+PxTransform waterTransform_;
+#pragma endregion
 
+#pragma region Funciones_Auxiliares
 void addParticleToForceSystem(Particle* particle, ParticleForceGenerator* g) {
-	if(forceSystem != nullptr)forceSystem->add(particle, g);
+	if (forceSystem != nullptr)forceSystem->add(particle, g);
 }
 
 void removeParticleFromForceSystem(Particle* particle, ParticleForceGenerator* g) {
@@ -67,7 +77,7 @@ Particle* findUnusedParticle() {
 
 	while (!found && it != listParticles.end()) {
 		if (!(*it)->isActive())found = true;
-		
+
 		else ++it;
 	}
 
@@ -93,10 +103,11 @@ void updateParticles(float t)
 		p->addTime(t);
 
 		//Si la partícula ya ha vivido el tiempo máximo la dejamos de renderizar
-		if (p->isDead()) p->desactivateParticle(); 
+		if (p->isDead()) p->desactivateParticle();
 		else p->integrate(t);
 	}
 }
+#pragma endregion
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -126,8 +137,8 @@ void initPhysics(bool interactive)
 	//Add Customed Code here
 	forceSystem = new ParticleForceRegistry();
 	gravedad_ = new ParticleGravity(Vector3(0, -10, 0));
-	explosion_ = new ParticleExplosion(200, Vector3(0,50,0), 25);
-	particleSystem = new ParticleSystem(Vector3(0,0,0), 0.005);
+	explosion_ = new ParticleExplosion(200, Vector3(0, 50, 0), 25);
+	particleSystem = new ParticleSystem(Vector3(0, 0, 0), 0.005);
 
 #pragma region listaParticulas
 	//for (int i = 0; i < MAX_PARTICLES; i++) {
@@ -144,23 +155,46 @@ void initPhysics(bool interactive)
 	//fireworkSystem2 = new FireworkSystem(forceSystem, Vector3(0,25,0), Vector3(0,20,0));
 #pragma endregion
 
-	p1 = new Particle();
-	p1->setPosition(springPos_);
-	p1->setVelocity(Vector3(10, 0, 0));
-	p1->activateParticle();
-	p2 = new Particle();
-	p2->setPosition(-springPos_);
-	p2->setVelocity(Vector3(-10, 0, 0));
-	p2->activateParticle();
+#pragma region Muelles_Apartado2
+	/*p1_ = new Particle();
+	p1_->setPosition(springPos_);
+	p1_->setVelocity(Vector3(10, 0, 0));
+	p1_->activateParticle();
+	p2_ = new Particle();
+	p2_->setPosition(-springPos_);
+	p2_->setVelocity(Vector3(-10, 0, 0));
+	p2_->activateParticle();
+
+	spring1_ = new ParticleSpring(p2_, 2.0f, 9);
+	spring2_ = new ParticleSpring(p1_, 2.0f, 9);
+
+	addParticleToForceSystem(p1_, explosion_);
+	addParticleToForceSystem(p2_, explosion_);
+
+	addParticleToForceSystem(p1_, spring1_);
+	addParticleToForceSystem(p2_, spring2_);*/
+#pragma endregion
+
+#pragma region Muelles_Apartado3
+	//Visualizacion del agua
+	PxBoxGeometry waterGeo(25, 1, 25);
+	waterTransform_ = PxTransform(0,0,0);
+	water_ = new RenderItem(CreateShape(waterGeo), &waterTransform_, Vector4(0.0, 0.5, 0.5, 1.0));
+
 	
-	spring1_ = new ParticleSpring(p2, 2.0f, 9);
-	spring2_ = new ParticleSpring(p1, 2.0f, 9);
+	//Sistema de flotacion
+	buoyancySytem_ = new ParticleBuoyancy(0.1,1, waterTransform_.p.y);
+	
+	//Particula del sistema de flotacion
+	pBuoyancy_ = new Particle();
+	pBuoyancy_->setPosition(Vector3(0, 10, 0));
+	pBuoyancy_->activateParticle();
 
-	addParticleToForceSystem(p1, explosion_);
-	addParticleToForceSystem(p2, explosion_);
+	//se ve afectada por la gravedad y por la flotacion
+	addParticleToForceSystem(pBuoyancy_, buoyancySytem_);
+	addParticleToForceSystem(pBuoyancy_, gravedad_);
+#pragma endregion
 
-	addParticleToForceSystem(p1, spring1_);
-	addParticleToForceSystem(p2, spring2_);
 }
 
 
@@ -176,11 +210,12 @@ void stepPhysics(bool interactive, double t)
 
 	explosion_->updateLifeTime(t);
 	forceSystem->updateForces(t);
-	particleSystem->update(t);
-	updateParticles(t);
-	p1->integrate(t);
-	p2->integrate(t);
-	
+	//particleSystem->update(t);
+	//updateParticles(t);
+	/*p1_->integrate(t);
+	p2_->integrate(t);*/
+
+	pBuoyancy_->integrate(t);
 }
 
 // Function to clean data
@@ -193,6 +228,7 @@ void cleanupPhysics(bool interactive)
 	delete particleSystem;
 	delete gravedad_;
 	delete explosion_;
+	delete buoyancySytem_;
 	delete spring1_;
 	delete spring2_;
 
@@ -200,8 +236,11 @@ void cleanupPhysics(bool interactive)
 		delete p;
 		p = nullptr;
 	}
-	delete p1;
-	delete p2;
+	//delete p1_;
+	//delete p2_;
+	delete pBuoyancy_;
+
+	if (water_ != nullptr) water_->release();
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
@@ -227,11 +266,12 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	case ' ':
 	{
 		if (!explosion_->isActive()) {
-			explosion_->activateExplosion(75*GetCamera()->getDir() + GetCamera()->getEye()); //
+			explosion_->activateExplosion(75 * GetCamera()->getDir() + GetCamera()->getEye()); //
 		}
 		break;
 	}
-	case '+':
+#pragma region Muelles_apartado2
+	/*case '+':
 	{
 		spring1_->updateSpringConstant(1);
 		spring2_->updateSpringConstant(1);
@@ -242,7 +282,8 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		spring1_->updateSpringConstant(-1);
 		spring2_->updateSpringConstant(-1);
 		break;
-	}
+	}*/
+#pragma endregion
 	default:
 		break;
 	}
