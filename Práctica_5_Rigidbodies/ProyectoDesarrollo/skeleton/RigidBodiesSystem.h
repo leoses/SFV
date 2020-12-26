@@ -34,8 +34,6 @@ public:
 	RigidBodiesSystem(Vector3 posSystem_, float timeBetweenSolidRigids = 1);
 	~RigidBodiesSystem() {
 		for (RigidBody* r : rigidBodies) {
-			r->rItem->release();
-			r->body->release();
 			delete r;
 		} shape->release();
 	};

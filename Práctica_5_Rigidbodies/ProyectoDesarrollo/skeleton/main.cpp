@@ -55,6 +55,17 @@ RigidBody* createRigidDynamic(Vector3 t, PxShape* shape, Vector3 speed) {
 	return r;
 }
 
+StaticRigidBody* createRigidStatic(Vector3 t, PxShape* shape) {
+	StaticRigidBody* r = new StaticRigidBody();
+	r->body = gPhysics->createRigidStatic(PxTransform(t));
+	r->body->attachShape(*shape);
+	r->rItem = new RenderItem(shape, r->body, Vector4(0, .5, 1.0, 1.0));
+
+	gScene->addActor(*r->body);
+
+	return r;
+}
+
 #pragma region Funciones_Auxiliares
 void addRigidBodyToForceSystem(RigidBody* rb, rbForceGenerator* g) {
 	if (forceSystem != nullptr)forceSystem->add(rb, g);

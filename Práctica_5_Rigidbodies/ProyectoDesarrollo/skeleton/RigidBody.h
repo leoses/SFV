@@ -6,4 +6,13 @@ struct RigidBody {
 	physx::PxRigidDynamic* body;
 
 	RigidBody():lifeTime(0.0), rItem(nullptr),body(nullptr){}
+	~RigidBody() { rItem->release(); body->release(); }
+};
+
+struct StaticRigidBody {
+	float lifeTime;
+	RenderItem* rItem;
+	physx::PxRigidStatic* body;
+
+	StaticRigidBody():lifeTime(0.0), rItem(nullptr), body(nullptr) {}
 };

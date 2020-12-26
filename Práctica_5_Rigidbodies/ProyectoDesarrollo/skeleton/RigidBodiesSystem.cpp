@@ -19,9 +19,7 @@ void RigidBodiesSystem::updateSystem(float t)
 
 			float x = (float(rand() % 2000)*1.25);
 			float z = (float(rand() % 2000)*1.25);
-			PxRigidDynamic* obj_;
 			RigidBody* r = createRigidDynamic(posSystem, shape, Vector3(x,0,z));
-
 			rigidBodies.push_back(r);
 			timeNextSolidRigid -= timeCreateSolidRigid;
 		}
@@ -34,8 +32,6 @@ void RigidBodiesSystem::updateSystem(float t)
 		(*it)->lifeTime += t;
 		if ((*it)->lifeTime >= RIGIDBODY_LIFE_TIME) {
 			removeRigidBodyFromForceSystem((*it));
-			(*it)->rItem->release();
-			(*it)->body->release();
 			delete (*it);
 			it = rigidBodies.erase(it);
 		}
