@@ -20,3 +20,12 @@ public:
 	ParticleCable(Particle* p1, Particle* p2) :ParticleLink(p1, p2){}
 };
 
+class ParticleRod : public ParticleLink
+{
+public:
+	float length;
+public:
+	virtual unsigned addContact(ParticleContact* contact) const;
+	ParticleRod(Particle* p1, Particle* p2) :ParticleLink(p1, p2) {}
+};
+

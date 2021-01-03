@@ -67,6 +67,7 @@ Particle* p1 = nullptr;
 Particle* p2 = nullptr;
 ParticleCable* pCable = nullptr;
 ParticleContact* pContact = nullptr;
+ParticleRod* pRod = nullptr;
 #pragma endregion
 
 
@@ -208,11 +209,13 @@ void initPhysics(bool interactive)
 	p1->activateParticle();
 	p2 = new Particle(Vector3(0, 10, 0), 0.5f, 0.3f, Vector4(0, 0, 255, 1));
 	p2->activateParticle();
-	pCable = new ParticleCable(p1, p2);
-	pCable->maxLength = 20;
-	pCable->restitution = 1.0;
 
-	//addParticleToForceSystem(p1, gravedad_);
+	/*pCable = new ParticleCable(p1, p2);
+	pCable->maxLength = 20;
+	pCable->restitution = 1.0;*/
+	pRod = new ParticleRod(p1, p2);
+	pRod->length = ((p2->getPosition() - p1->getPosition()).magnitude());
+
 	pContact = new ParticleContact();
 	
 #pragma endregion
@@ -236,8 +239,10 @@ void stepPhysics(bool interactive, double t)
 	//particleSystem->update(t);
 	//updateParticles(t);
 
-	if(pCable->addContact(pContact)) 
-		pContact->resolve(t);
+	/*if(pCable->addContact(pContact)) 
+		pContact->resolve(t);*/
+	if (pRod->addContact(pContact)) pContact->resolve(t);
+
 	p1->integrate(t);
 	p2->integrate(t);
 
@@ -258,7 +263,7 @@ void cleanupPhysics(bool interactive)
 	//delete spring1_;
 	//delete spring2_;
 
-	delete pCable;
+	delete pRod;
 	delete pContact;
 
 	for (Particle* p : listParticles) {
