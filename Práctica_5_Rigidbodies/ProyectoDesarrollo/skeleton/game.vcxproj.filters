@@ -26,6 +26,7 @@
     <ClInclude Include="checkML.h" />
     <ClInclude Include="RigidBodyFRegistry.h" />
     <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="RigidBodiesSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

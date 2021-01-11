@@ -17,6 +17,9 @@
     <ClCompile Include="ParticleForceRegistry.cpp" />
     <ClCompile Include="ParticleContact.cpp" />
     <ClCompile Include="ParticleLink.cpp" />
+    <ClCompile Include="RigidBodiesSystem.cpp" />
+    <ClCompile Include="RigidBodyFRegistry.cpp" />
+    <ClCompile Include="Floor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -36,6 +39,11 @@
     <ClInclude Include="ParticleForceRegistry.h" />
     <ClInclude Include="ParticleContact.h" />
     <ClInclude Include="ParticleLink.h" />
+    <ClInclude Include="RigidBodiesSystem.h" />
+    <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="RigidBodyForceGenerator.h" />
+    <ClInclude Include="RigidBodyFRegistry.h" />
+    <ClInclude Include="Floor.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">
