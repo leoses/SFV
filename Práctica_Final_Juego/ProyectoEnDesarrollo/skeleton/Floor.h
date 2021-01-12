@@ -6,7 +6,7 @@
 using namespace physx;
 using namespace std;
 
-extern StaticRigidBody* createRigidStatic(Vector3 t, PxShape* shape);
+extern StaticRigidBody* createRigidStatic(const Vector3& t, PxShape* shape, const Vector4& color = Vector4(0, .5, 1.0, 1.0));
 
 struct FloorLevel {
 	Vector3 dimensions_;

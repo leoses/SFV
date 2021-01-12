@@ -10,7 +10,7 @@
 using namespace physx;
 using namespace std;
 
-extern RigidBody* createRigidDynamic(Vector3 t, PxShape* shape, Vector3 speed);
+extern RigidBody* createRigidDynamic(const Vector3& t, PxShape* shape, const Vector3& speed, const Vector4& color = Vector4(0, .5, 1.0, 1.0));
 extern void removeRigidBodyFromForceSystem(RigidBody* rb);
 
 constexpr int  MAX_SOLIDRIGID = 100;

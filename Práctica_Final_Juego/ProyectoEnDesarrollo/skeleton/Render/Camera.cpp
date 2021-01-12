@@ -78,6 +78,12 @@ void Camera::handleAnalogMove(float x, float y)
 	mEye += viewY*x;
 }
 
+void Camera::followPlayer(PxVec3 posPlayer, float dist)
+{
+	mEye.y = posPlayer.y - (mDir.y * dist);
+	mEye.z = posPlayer.z + 50 - (mDir.z * dist);
+}
+
 void Camera::handleMotion(int x, int y)
 {
 	int dx = mMouseX - x;
@@ -105,6 +111,16 @@ PxTransform Camera::getTransform() const
 
 	PxMat33 m(mDir.cross(viewY), viewY, -mDir);
 	return PxTransform(mEye, PxQuat(m));
+}
+
+void Camera::setDir(const physx::PxVec3& dir)
+{
+	mDir = dir.getNormalized();
+}
+
+void Camera::setEye(const physx::PxVec3& eye)
+{
+	mEye = eye;
 }
 
 PxVec3 Camera::getEye() const

@@ -15,4 +15,5 @@ struct StaticRigidBody {
 	physx::PxRigidStatic* body;
 
 	StaticRigidBody():lifeTime(0.0), rItem(nullptr), body(nullptr) {}
+	~StaticRigidBody(){ rItem->release(); body->release(); }
 };

@@ -17,10 +17,8 @@ Floor::Floor()
 Floor::~Floor()
 {
 	for (StaticRigidBody* r : floorElements) {
-		r->rItem->release();
 		delete r;
 	}
-
 }
 
 void Floor::initializeLevel()

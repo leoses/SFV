@@ -15,6 +15,7 @@
 #include "RigidBodyFRegistry.h"
 #include "Floor.h"
 #include <iostream>
+#include "Player.h"
 
 using namespace physx;
 
@@ -41,6 +42,9 @@ constexpr int MAX_PARTICLES = 1000;
 //lista con las partículas creadas
 std::list<Particle*> listParticles;
 
+float maxDistanceCamera;
+PxTransform* playerDestination = nullptr;
+
 #pragma region Fuerzas
 //Controlador de fuerzas
 ParticleForceRegistry* forceSystem = nullptr;
@@ -48,11 +52,11 @@ ParticleForceRegistry* forceSystem = nullptr;
 
 #pragma region RigidBodies
 
-RigidBody* createRigidDynamic(Vector3 t, PxShape* shape, Vector3 speed) {
+RigidBody* createRigidDynamic(const Vector3 & t, PxShape* shape, const Vector3 & speed, const Vector4 & color = Vector4(0, .5, 1.0, 1.0)) {
 	RigidBody* r = new RigidBody();
 	r->body = gPhysics->createRigidDynamic(PxTransform(t));
 	r->body->attachShape(*shape);
-	r->rItem = new RenderItem(shape, r->body, Vector4(0, .5, 1.0, 1.0));
+	r->rItem = new RenderItem(shape, r->body,color );
 
 	gScene->addActor(*r->body);
 	PxRigidBodyExt::updateMassAndInertia(*r->body, PxReal(2));
@@ -61,11 +65,11 @@ RigidBody* createRigidDynamic(Vector3 t, PxShape* shape, Vector3 speed) {
 	return r;
 }
 
-StaticRigidBody* createRigidStatic(Vector3 t, PxShape* shape) {
+StaticRigidBody* createRigidStatic(const Vector3 & t, PxShape* shape, const Vector4 & color) {
 	StaticRigidBody* r = new StaticRigidBody();
 	r->body = gPhysics->createRigidStatic(PxTransform(t));
 	r->body->attachShape(*shape);
-	r->rItem = new RenderItem(shape, r->body, Vector4(0, .5, 1.0, 1.0));
+	r->rItem = new RenderItem(shape, r->body, color);
 
 	gScene->addActor(*r->body);
 
@@ -85,7 +89,7 @@ void removeRigidBodyFromForceSystem(RigidBody* rb) {
 
 #pragma region Juego
 Floor* suelo = nullptr;
-RigidBody* player = nullptr;
+Player* player = nullptr;
 #pragma endregion
 
 #pragma region Funciones_Auxiliares
@@ -125,7 +129,6 @@ void updateParticles(float t)
 	//Actualizacion de posiciones
 	for (Particle* p : listParticles) {
 		if (!p->isActive())continue;
-
 		p->addTime(t);
 
 		//Si la partícula ya ha vivido el tiempo máximo la dejamos de renderizar
@@ -164,15 +167,26 @@ void initPhysics(bool interactive)
 	forceSystem = new ParticleForceRegistry();
 	particleSystem = new ParticleSystem(Vector3(0, 0, 0), 0.005);
 
-	//Jugador
-	PxGeometry* geo = new PxBoxGeometry(Vector3(5, 5, 5));
-	PxShape* shape = CreateShape(*geo);
-
-	player = createRigidDynamic(Vector3(0, 10, 0), shape, Vector3(0, 0, 10));
-
+#pragma region Player
+	player = new Player();
+#pragma endregion
+	
+#pragma region Nivel
 	//Suelo del nivel
 	suelo = new Floor();
+#pragma endregion
 
+#pragma region Camara
+	//Configuración de la posición inicial de la camara
+	Vector3 playerIniPos = player->getBody()->getGlobalPose().p;
+	GetCamera()->setEye(Vector3(playerIniPos.x, playerIniPos.y + 50, playerIniPos.z - 50));
+	playerIniPos.z += 50;
+	GetCamera()->setDir(playerIniPos - GetCamera()->getEye());
+
+	maxDistanceCamera = (playerIniPos - GetCamera()->getEye()).magnitude();
+
+#pragma endregion
+	
 }
 
 
@@ -187,6 +201,9 @@ void stepPhysics(bool interactive, double t)
 	gScene->fetchResults(true);
 
 	forceSystem->updateForces(t);
+
+	Vector3 playerPos = player->getBody()->getGlobalPose().p;
+	GetCamera()->followPlayer(playerPos, maxDistanceCamera);
 }
 
 // Function to clean data
@@ -194,6 +211,8 @@ void stepPhysics(bool interactive, double t)
 void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
+
+	delete player;
 
 	delete forceSystem;
 	delete particleSystem;
@@ -225,18 +244,14 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 		//case 'B': break;
 		//case ' ':	break;
-	case 'H':
+	case 'C':
 	{
-		if (player->body->getGlobalPose().p.x < 12.5) {
-			std::cout << "dcha\n";
-		}
+		player->changeTrack(horizontalMovement::Left);
 		break;
 	}
-	case 'F':
+	case 'Z':
 	{
-		if (player->body->getGlobalPose().p.x > -12.5) {
-			std::cout << "izq\n";
-		}
+		player->changeTrack(horizontalMovement::Right);
 		break;
 	}
 	default:
