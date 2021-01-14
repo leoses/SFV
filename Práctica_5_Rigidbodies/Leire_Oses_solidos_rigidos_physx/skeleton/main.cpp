@@ -40,7 +40,9 @@ RigidBodiesSystem* rbSystem = nullptr;
 rbExplosion* explosion_ = nullptr;
 RigidBodyFRegistry* forceSystem = nullptr;
 
-RigidBody* createRigidDynamic(Vector3 t, PxShape* shape, Vector3 speed) {
+list<StaticRigidBody*> staticRigidBodies;
+
+RigidBody* createRigidDynamic(const Vector3 & t, PxShape* shape, const Vector3 & speed) {
 	RigidBody* r = new RigidBody();
 	r->body = gPhysics->createRigidDynamic(PxTransform(t));
 	r->body->attachShape(*shape);
@@ -55,7 +57,7 @@ RigidBody* createRigidDynamic(Vector3 t, PxShape* shape, Vector3 speed) {
 	return r;
 }
 
-StaticRigidBody* createRigidStatic(Vector3 t, PxShape* shape) {
+StaticRigidBody* createRigidStatic(const Vector3 & t, PxShape* shape) {
 	StaticRigidBody* r = new StaticRigidBody();
 	r->body = gPhysics->createRigidStatic(PxTransform(t));
 	r->body->attachShape(*shape);
@@ -107,10 +109,13 @@ void initPhysics(bool interactive)
 	PxGeometry* geo = new PxBoxGeometry(200, 5, 200);
 	PxShape* shape = CreateShape(*geo);
 	delete geo;
-	suelo_->attachShape(*shape);
-	sueloRender_ = new RenderItem(shape,suelo_, Vector4(1.0, .0, .0, 1.0));
+	//suelo_->attachShape(*shape);
+	//sueloRender_ = new RenderItem(shape,suelo_, Vector4(1.0, .0, .0, 1.0));
 
-	gScene->addActor(*suelo_);
+	staticRigidBodies.push_back(createRigidStatic(Vector3(0, 0, 0), shape));
+	shape->release();
+
+	//gScene->addActor(*suelo_);
 
 	rbSystem = new RigidBodiesSystem(Vector3(0, 50, 0),2);
 	explosion_ = new rbExplosion(1500, Vector3(0, 50, 0), 25);
@@ -140,9 +145,12 @@ void cleanupPhysics(bool interactive)
 	PX_UNUSED(interactive);
 
 	delete forceSystem;
-	sueloRender_->release();
 	delete rbSystem;
 	delete explosion_;
+
+	for (StaticRigidBody* r : staticRigidBodies) {
+		delete r;
+	}
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();

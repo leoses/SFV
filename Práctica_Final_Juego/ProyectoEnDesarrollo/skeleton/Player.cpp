@@ -19,6 +19,8 @@ Player::~Player()
 
 void Player::changeTrack(horizontalMovement dir)
 {
+	//Así o usando impulsos??
+	//Cambiar luego
 	Vector3 pos = player_->body->getGlobalPose().p;
 	switch (dir)
 	{
