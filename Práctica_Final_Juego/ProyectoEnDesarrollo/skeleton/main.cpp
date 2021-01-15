@@ -34,8 +34,6 @@ PxScene* gScene = NULL;
 ContactReportCallback gContactReportCallback;
 
 //Añadimos aquí como variables globales los elementos necesarios para la practica
-ParticleSystem* particleSystem = nullptr;
-
 //NUMERO MÁXIMO DE PARTICULAS
 constexpr int MAX_PARTICLES = 1000;
 
@@ -43,12 +41,6 @@ constexpr int MAX_PARTICLES = 1000;
 std::list<Particle*> listParticles;
 
 float maxDistanceCamera;
-PxTransform* playerDestination = nullptr;
-
-#pragma region Fuerzas
-//Controlador de fuerzas
-ParticleForceRegistry* forceSystem = nullptr;
-#pragma endregion
 
 #pragma region RigidBodies
 
@@ -93,13 +85,13 @@ Player* player = nullptr;
 #pragma endregion
 
 #pragma region Funciones_Auxiliares
-void addParticleToForceSystem(Particle* particle, ParticleForceGenerator* g) {
-	if (forceSystem != nullptr)forceSystem->add(particle, g);
-}
-
-void removeParticleFromForceSystem(Particle* particle, ParticleForceGenerator* g) {
-	if (forceSystem != nullptr)forceSystem->remove(particle, g);
-}
+//void addParticleToForceSystem(Particle* particle, ParticleForceGenerator* g) {
+//	if (forceSystem != nullptr)forceSystem->add(particle, g);
+//}
+//
+//void removeParticleFromForceSystem(Particle* particle, ParticleForceGenerator* g) {
+//	if (forceSystem != nullptr)forceSystem->remove(particle, g);
+//}
 
 Particle* findUnusedParticle() {
 	bool found = false;
@@ -155,7 +147,7 @@ void initPhysics(bool interactive)
 
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, -19.7f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = contactReportFilterShader;
@@ -164,31 +156,20 @@ void initPhysics(bool interactive)
 	// ------------------------------------------------------
 
 	//Add Customed Code here
-	forceSystem = new ParticleForceRegistry();
-	particleSystem = new ParticleSystem(Vector3(0, 0, 0), 0.005);
-
-#pragma region Player
+	//Creamos al jugador
 	player = new Player();
-#pragma endregion
 	
-#pragma region Nivel
-	//Suelo del nivel
+	//Creamos el nivel
 	suelo = new Floor();
-#pragma endregion
 
-#pragma region Camara
 	//Configuración de la posición inicial de la camara
 	Vector3 playerIniPos = player->getBody()->getGlobalPose().p;
 	GetCamera()->setEye(Vector3(playerIniPos.x, playerIniPos.y + 50, playerIniPos.z - 50));
 	playerIniPos.z += 50;
 	GetCamera()->setDir(playerIniPos - GetCamera()->getEye());
-
 	maxDistanceCamera = (playerIniPos - GetCamera()->getEye()).magnitude();
-
-#pragma endregion
 	
 }
-
 
 // Function to configure what happens in each step of physics
 // interactive: true if the game is rendering, false if it offline
@@ -199,8 +180,6 @@ void stepPhysics(bool interactive, double t)
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
-
-	forceSystem->updateForces(t);
 
 	Vector3 playerPos = player->getBody()->getGlobalPose().p;
 	GetCamera()->followPlayer(playerPos, maxDistanceCamera);
@@ -213,9 +192,6 @@ void cleanupPhysics(bool interactive)
 	PX_UNUSED(interactive);
 
 	delete player;
-
-	delete forceSystem;
-	delete particleSystem;
 	delete suelo;
 
 	for (Particle* p : listParticles) {
@@ -242,8 +218,6 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch (toupper(key))
 	{
-		//case 'B': break;
-		//case ' ':	break;
 	case 'C':
 	{
 		player->changeTrack(horizontalMovement::Left);

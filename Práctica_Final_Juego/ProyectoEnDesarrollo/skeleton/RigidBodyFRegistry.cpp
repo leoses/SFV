@@ -14,11 +14,11 @@ bool rbInsideASphere::rbInsideVolume(Vector3 position)
 	else return false;
 }
 
-void rbInsideASphere::createVolume()
+void rbInsideASphere::createVolume( const Vector4 color)
 {
 	auto shape = CreateShape(*geo);
 	t = PxTransform(center_);
-	volume = new RenderItem(shape, &t, Vector4(0.0, 0.0, 0.0, 0.0));
+	volume = new RenderItem(shape, &t, color);
 	volume->transform = &t;
 	shape->release();
 }
@@ -108,4 +108,34 @@ void RigidBodyFRegistry::updateForces(float t)
 	for (RbForceRegistration p : registrations) {
 		p.fg->updateForce(p.particle, t);
 	}
+}
+
+RigidBodyWind::RigidBodyWind(WindType type, Vector3 pos, float radius) :
+	rbInsideASphere(pos, radius), type_(type){
+
+	switch (type_)
+	{
+	case Forward:
+		createVolume(Vector4(0,0,255,0));
+		windDirection_ = Vector3(0, 0, 20);
+		break;
+	case Backward:
+		createVolume(Vector4(255, 0, 0, 0));
+		windDirection_ = Vector3(0, 0, -20);
+		break;
+	case Upwards:
+		createVolume(Vector4(0, 255, 0, 0));
+		windDirection_ = Vector3(0, 20, 0);
+		break;
+	default:
+		break;
+	}
+	
+}
+
+void RigidBodyWind::updateForce(RigidBody* rb, float t) 
+{
+	if (!rbInsideVolume(rb->body->getGlobalPose().p))return;
+
+	rb->body->addForce(windDirection_);
 }

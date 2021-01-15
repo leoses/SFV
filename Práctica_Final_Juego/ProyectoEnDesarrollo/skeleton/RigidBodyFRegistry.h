@@ -32,7 +32,7 @@ public:
 	virtual ~rbInsideASphere() { if (volume != nullptr) volume->release(); delete geo; }
 
 	bool rbInsideVolume(Vector3 position);
-	void createVolume();
+	void createVolume(const Vector4 color = Vector4(0.0, 0.0, 0.0, 0.0));
 };
 
 class rbExplosion :public rbInsideASphere {
@@ -53,6 +53,20 @@ public:
 	//Getters
 	const bool isActive() noexcept { return active_; }
 
+};
+
+enum WindType {Forward, Backward, Upwards};
+
+class RigidBodyWind :public rbInsideASphere {
+public:
+	RigidBodyWind(WindType type,Vector3 pos, float radius = 10);
+	virtual ~RigidBodyWind() {};
+
+	virtual void updateForce(RigidBody* rb, float t) override;
+private:
+	//Direccion del viento
+	Vector3 windDirection_;
+	WindType type_;
 };
 
 class RigidBodyFRegistry

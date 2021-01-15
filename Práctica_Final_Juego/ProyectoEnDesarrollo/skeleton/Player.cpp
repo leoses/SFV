@@ -19,19 +19,17 @@ Player::~Player()
 
 void Player::changeTrack(horizontalMovement dir)
 {
-	//Así o usando impulsos??
-	//Cambiar luego
-	Vector3 pos = player_->body->getGlobalPose().p;
 	switch (dir)
 	{
-	case Left: pos.x -= 0.5;
+	case Left: {
+		player_->body->setLinearVelocity(PxVec3(-15, 0, 50));
+		break;  
+	}
+	case Right: {
+		player_->body->setLinearVelocity(PxVec3(15, 0, 50));
 		break; 
-	case Right:pos.x += 0.5;
-		break;
+	}
 	default:
 		break;
 	}
-	physx::PxTransform trans(pos);
-	player_->body->setGlobalPose(trans);
-
 }
