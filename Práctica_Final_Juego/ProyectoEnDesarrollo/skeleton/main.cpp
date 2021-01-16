@@ -44,6 +44,9 @@ std::list<RigidBodyWind*> winds_;
 
 float maxDistanceCamera;
 
+PxScene* getScene() noexcept { return gScene; }
+PxPhysics* getPhysics() noexcept{ return gPhysics; }
+
 #pragma region RigidBodies
 
 RigidBody* createRigidDynamic(const Vector3 & t, PxShape* shape, const Vector3 & speed, const Vector4 & color = Vector4(0, .5, 1.0, 1.0)) {

@@ -2,10 +2,18 @@
 
 Player::Player(PxShape* shape): RigidBody()
 {    
-	RigidBody* rb = createRigidDynamic(iniPos, shape, Vector3(0, 0, 0), Vector4(1.0, 0, 0, 1.0));
+	/*RigidBody* rb = createRigidDynamic(iniPos, shape, Vector3(0, 0, 0), Vector4(1.0, 0, 0, 1.0));
 
 	body = rb->body;
-	rItem = rb->rItem;
+	rItem = rb->rItem;*/
+
+	body = getPhysics()->createRigidDynamic(PxTransform(iniPos));
+	body->attachShape(*shape);
+	rItem = new RenderItem(shape,body, Vector4(1.0, 0, 0, 1.0));
+
+	getScene()->addActor(*body);
+	PxRigidBodyExt::updateMassAndInertia(*body, PxReal(2));
+	
 	body->setLinearDamping(PxReal(0));
 	body->setLinearVelocity(PxVec3(0, 0, 50));
 	shape->release();

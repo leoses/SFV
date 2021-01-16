@@ -8,7 +8,8 @@ using namespace physx;
 constexpr float MIN_CAMERA_CENTER_OFFSET = 45;
 
 extern RigidBody* createRigidDynamic(const Vector3& t, PxShape* shape, const Vector3& speed, const Vector4& color);
-
+extern PxScene* getScene() noexcept;
+extern PxPhysics* getPhysics()noexcept;
 class Player: public RigidBody
 {
 private:
