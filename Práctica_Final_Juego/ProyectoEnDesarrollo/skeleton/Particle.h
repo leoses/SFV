@@ -26,7 +26,7 @@ protected:
     //Transform auxiliar para mover la partícula
     PxTransform trans;
     //Geometría de la partícula
-    PxSphereGeometry* geo;
+    PxGeometry* geo;
     //Color de la partícula
     Vector4 color_;
 

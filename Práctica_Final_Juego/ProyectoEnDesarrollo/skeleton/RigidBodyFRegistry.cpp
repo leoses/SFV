@@ -1,7 +1,9 @@
 #include "RigidBodyFRegistry.h"
+#include "Player.h"
 
 rbInsideASphere::rbInsideASphere(Vector3 center, float radius)
 {
+	center_ = center;
 	radius_ = radius;
 	geo = new PxSphereGeometry(radius);
 }
@@ -116,15 +118,15 @@ RigidBodyWind::RigidBodyWind(WindType type, Vector3 pos, float radius) :
 	switch (type_)
 	{
 	case Forward:
-		createVolume(Vector4(0,0,255,0));
-		windDirection_ = Vector3(0, 0, 20);
+		createVolume(Vector4(0.0,0.0,255,0.0));
+		windDirection_ = Vector3(0, 0, 50);
 		break;
 	case Backward:
-		createVolume(Vector4(255, 0, 0, 0));
-		windDirection_ = Vector3(0, 0, -20);
+		createVolume(Vector4(255, 0.0, 0.0, 0.0));
+		windDirection_ = Vector3(0, 0, -30);
 		break;
 	case Upwards:
-		createVolume(Vector4(0, 255, 0, 0));
+		createVolume(Vector4(0.0, 255, 0.0, 0.0));
 		windDirection_ = Vector3(0, 20, 0);
 		break;
 	default:
@@ -137,5 +139,17 @@ void RigidBodyWind::updateForce(RigidBody* rb, float t)
 {
 	if (!rbInsideVolume(rb->body->getGlobalPose().p))return;
 
-	rb->body->addForce(windDirection_);
+	rb->body->addForce(windDirection_,physx::PxForceMode::eIMPULSE);
+
+	if (type_ == WindType::Upwards)return;
+
+	Player* p = static_cast<Player *>(rb);
+	float off = p->getCurrCameraPlayerOffset();
+	if (off > MIN_CAMERA_CENTER_OFFSET && type_ == WindType::Forward) {
+		p->setCurrCameraPlayerOffset(off - 0.01);
+	}
+	else if (type_ == WindType::Backward) {
+		p->setCurrCameraPlayerOffset(off + 0.005);
+	}
+	
 }

@@ -4,8 +4,8 @@ Floor::Floor()
 {
 	initializeLevel();
 
-	PxGeometry* paredes = new physx::PxBoxGeometry(10, 50, 100);
-	PxGeometry* suelos = new physx::PxBoxGeometry(50, 1, 100);
+	PxGeometry* paredes = new physx::PxBoxGeometry(10, 50, 200);
+	PxGeometry* suelos = new physx::PxBoxGeometry(50, 1, 200);
 
 	PxShape* wallShape = CreateShape(*paredes);
 	PxShape* floorShape = CreateShape(*suelos);

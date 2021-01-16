@@ -1,6 +1,7 @@
 #pragma once
 #include "RenderUtils.hpp"
-struct RigidBody {
+class RigidBody {
+public:
 	float lifeTime;
 	RenderItem* rItem;
 	physx::PxRigidDynamic* body;
@@ -9,7 +10,8 @@ struct RigidBody {
 	~RigidBody() { rItem->release(); body->release(); }
 };
 
-struct StaticRigidBody {
+class StaticRigidBody {
+public:
 	float lifeTime;
 	RenderItem* rItem;
 	physx::PxRigidStatic* body;

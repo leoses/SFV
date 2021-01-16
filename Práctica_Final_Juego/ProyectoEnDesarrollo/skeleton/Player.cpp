@@ -1,20 +1,34 @@
 #include "Player.h"
 
-Player::Player()
-{
-	PxGeometry* geo = new PxSphereGeometry(5);
-	PxShape* shape = CreateShape(*geo);
+Player::Player(PxShape* shape): RigidBody()
+{    
+	RigidBody* rb = createRigidDynamic(iniPos, shape, Vector3(0, 0, 0), Vector4(1.0, 0, 0, 1.0));
 
-	player_ = createRigidDynamic(Vector3(0, 1, -75), shape, Vector3(0, 0, 0), Vector4(1.0, 0, 0, 1.0));
-
-	player_->body->setLinearDamping(PxReal(0));
-	player_->body->setLinearVelocity(PxVec3(0, 0, 50));
-	delete geo;
+	body = rb->body;
+	rItem = rb->rItem;
+	body->setLinearDamping(PxReal(0));
+	body->setLinearVelocity(PxVec3(0, 0, 50));
+	shape->release();
+	currCameraPlayerOffset = 50;
 }
 
 Player::~Player()
 {
-	delete player_;
+}
+
+void Player::resetForces()
+{
+	body->clearForce(physx::PxForceMode::eIMPULSE);
+}
+
+float Player::getCurrCameraPlayerOffset() noexcept
+{
+	return currCameraPlayerOffset;
+}
+
+void Player::setCurrCameraPlayerOffset(const float newOffset) noexcept
+{
+	if (newOffset > MIN_CAMERA_CENTER_OFFSET)currCameraPlayerOffset = newOffset;
 }
 
 void Player::changeTrack(horizontalMovement dir)
@@ -22,14 +36,23 @@ void Player::changeTrack(horizontalMovement dir)
 	switch (dir)
 	{
 	case Left: {
-		player_->body->setLinearVelocity(PxVec3(-15, 0, 50));
+		body->setLinearVelocity(PxVec3(-15, 0, 50));
 		break;  
 	}
 	case Right: {
-		player_->body->setLinearVelocity(PxVec3(15, 0, 50));
+		body->setLinearVelocity(PxVec3(15, 0, 50));
 		break; 
 	}
 	default:
 		break;
 	}
+}
+
+void Player::playerLose()
+{
+	body->clearForce(PxForceMode::eACCELERATION);
+	body->clearForce(PxForceMode::eVELOCITY_CHANGE);
+	currCameraPlayerOffset = 50;
+	body->setLinearVelocity(PxVec3(0, 0, 50));
+	body->setGlobalPose(PxTransform(iniPos));
 }

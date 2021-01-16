@@ -78,10 +78,10 @@ void Camera::handleAnalogMove(float x, float y)
 	mEye += viewY*x;
 }
 
-void Camera::followPlayer(PxVec3 posPlayer, float dist)
+void Camera::followPlayer(PxVec3 posPlayer, float dist, float offset)
 {
 	mEye.y = posPlayer.y - (mDir.y * dist);
-	mEye.z = posPlayer.z + 50 - (mDir.z * dist);
+	mEye.z = posPlayer.z + offset - (mDir.z * dist);
 }
 
 void Camera::handleMotion(int x, int y)

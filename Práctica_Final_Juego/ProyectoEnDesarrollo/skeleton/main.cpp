@@ -40,6 +40,8 @@ constexpr int MAX_PARTICLES = 1000;
 //lista con las partículas creadas
 std::list<Particle*> listParticles;
 
+std::list<RigidBodyWind*> winds_;
+
 float maxDistanceCamera;
 
 #pragma region RigidBodies
@@ -130,6 +132,16 @@ void updateParticles(float t)
 }
 #pragma endregion
 
+void configurateCameraPos() {
+	//Configuración de la posición inicial de la camara
+	Vector3 playerIniPos = player->body->getGlobalPose().p;
+	GetCamera()->setEye(Vector3(playerIniPos.x, playerIniPos.y + 50, playerIniPos.z - 50));
+	playerIniPos.z += 50;
+	GetCamera()->setDir(playerIniPos - GetCamera()->getEye());
+
+	maxDistanceCamera = (playerIniPos - GetCamera()->getEye()).magnitude();
+}
+
 // Initialize physics engine
 void initPhysics(bool interactive)
 {
@@ -147,7 +159,7 @@ void initPhysics(bool interactive)
 
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -19.7f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, -30.0f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = contactReportFilterShader;
@@ -157,17 +169,21 @@ void initPhysics(bool interactive)
 
 	//Add Customed Code here
 	//Creamos al jugador
-	player = new Player();
+	PxGeometry* geo = new PxSphereGeometry(5);
+	PxShape* shape = CreateShape(*geo);
+	player = new Player(shape);
+
+	//shape->release();
+	delete geo;
 	
 	//Creamos el nivel
 	suelo = new Floor();
 
-	//Configuración de la posición inicial de la camara
-	Vector3 playerIniPos = player->getBody()->getGlobalPose().p;
-	GetCamera()->setEye(Vector3(playerIniPos.x, playerIniPos.y + 50, playerIniPos.z - 50));
-	playerIniPos.z += 50;
-	GetCamera()->setDir(playerIniPos - GetCamera()->getEye());
-	maxDistanceCamera = (playerIniPos - GetCamera()->getEye()).magnitude();
+	rigidBodyForceSystem = new RigidBodyFRegistry();
+
+	RigidBodyWind* viento = new RigidBodyWind(WindType::Backward, Vector3(0, 0, 50),25);
+	winds_.push_back(viento);
+	addRigidBodyToForceSystem(player, viento);
 	
 }
 
@@ -181,8 +197,18 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	Vector3 playerPos = player->getBody()->getGlobalPose().p;
-	GetCamera()->followPlayer(playerPos, maxDistanceCamera);
+	if (player->body->getGlobalPose().p.z  <= GetCamera()->getEye().z + player->getCurrCameraPlayerOffset()-10) {
+		std::cout << "has perdido\n";
+		player->playerLose();
+		configurateCameraPos();
+	}
+
+	player->resetForces();
+	rigidBodyForceSystem->updateForces(t);
+
+	Vector3 playerPos = player->body->getGlobalPose().p;
+	GetCamera()->followPlayer(playerPos, maxDistanceCamera, player->getCurrCameraPlayerOffset());
+	
 }
 
 // Function to clean data
@@ -193,11 +219,17 @@ void cleanupPhysics(bool interactive)
 
 	delete player;
 	delete suelo;
+	
+	for (RigidBodyWind* v : winds_) {
+		delete v;
+	}
 
 	for (Particle* p : listParticles) {
 		delete p;
 		p = nullptr;
 	}
+
+	delete rigidBodyForceSystem;
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
 	gScene->release();
