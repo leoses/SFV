@@ -17,6 +17,8 @@
     <ClCompile Include="RigidBodyFRegistry.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Level.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="CoinSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -38,6 +40,8 @@
     <ClInclude Include="RigidBodyFRegistry.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="CoinSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

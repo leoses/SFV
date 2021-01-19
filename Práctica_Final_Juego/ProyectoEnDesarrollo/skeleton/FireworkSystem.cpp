@@ -12,7 +12,7 @@ FireworkSystem::FireworkSystem(ParticleForceRegistry* fr,Vector3 initialSystemPo
 		fireworkElements.push_back(new Firework());
 	}
 
-	//inicializar generador randoms
+	//inicializar generador randoms YA INICIALIZADO EN OTRA PARTE
 	/*srand(time(NULL));*/
 }
 
@@ -72,7 +72,7 @@ void FireworkSystem::initFireworkRules()
 	rules.push_back({ //at(0)
 			0, // type
 			1.5f, 2.4f, // age range
-			Vector3(0, 30, 0), Vector3(0, 60, 0), // velocity range
+			Vector3(0, 45, 0), Vector3(0, 45, 0), // velocity range
 			0.1, // damping
 			Vector4(0,255, 0, 1),//color
 	});

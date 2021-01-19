@@ -40,7 +40,7 @@ protected:
 
 
 public:
-    Particle(PxVec3 pos = Vector3(0,0,0),float damp = 0.5, float iMass = 0.3, Vector4 color = Vector4(255, 0, 0, 1)):
+    Particle(PxVec3 pos = Vector3(0,0,0),float damp = 0.5, float iMass = 0.3, Vector4 color = Vector4(0.5, 0.5,0.5, 1)):
         position_(pos), 
         velocity_(0,0,0), 
         acceleration_(0, 0, 0),
@@ -49,7 +49,18 @@ public:
         inverse_mass(iMass),
         color_(color)
     {
-        geo = new PxSphereGeometry(1);
+        geo = new PxSphereGeometry(0.5);
+    }
+
+    Particle(float size, PxVec3 pos = Vector3(0, 0, 0), float damp = 0.5, float iMass = 0.3, Vector4 color = Vector4(0.5, 0.5, 0.5, 1)) : position_(pos),
+        velocity_(0, 0, 0),
+        acceleration_(0, 0, 0),
+        force(0, 0, 0),
+        damping(damp),
+        inverse_mass(iMass),
+        color_(color) 
+    {
+        geo = new PxSphereGeometry(size);
     }
     ~Particle();
 
@@ -70,7 +81,7 @@ public:
     const Vector4 getColor() { return color_; }
     const float getInverseMass() noexcept { return inverse_mass; }
     const float getMass()noexcept { return 1 / inverse_mass; }
-    const float getAccelerationY() { return velocity_.y; }
+    const float getAccelerationY() noexcept { return velocity_.y; }
 #pragma endregion
 
 #pragma region Setters

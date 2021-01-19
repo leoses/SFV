@@ -66,9 +66,13 @@ public:
 
 	virtual void updateForce(RigidBody* rb, float t) override;
 private:
-	//Direccion del viento
+	//Direccion del viento (solo para los upwards, puesto que van con fuerzas)
 	Vector3 windDirection_;
+	//Tipo de viento
 	WindType type_;
+	//Cambio de velocidad del player al entrar en el viento (solo para Forward y Backwards)
+	float speedModification = 0.0;
+	const float MODIFICATOR = 400;
 };
 
 class rbInsideBox : public rbForceGenerator {
@@ -77,18 +81,20 @@ private:
 	Vector3 center_;
 	PxTransform t;
 	RenderItem* box = nullptr;
-
 	bool reached = false;
 public:
 
 	rbInsideBox(Vector3 dim_, Vector3 center_, Vector4 color);
 	virtual ~rbInsideBox();
-
-	void resetWinningCondition() { reached = false; }
-
+	//Resetea la condicion de victoria por si nos pasamos el juego pero
+	//queremos volver a jugar
+	void resetWinningCondition() noexcept{ reached = false; }
+	//Obtener centro del area 
+	const Vector3 getCenter() { return center_; }
+	//metodo para comprobar si el jugador ha entrado en el trigger
 	bool isInside(RigidBody* rb);
-	virtual void updateForce(RigidBody* rb, float t) override;
 
+	virtual void updateForce(RigidBody* rb, float t) override;
 };
 
 class RigidBodyFRegistry

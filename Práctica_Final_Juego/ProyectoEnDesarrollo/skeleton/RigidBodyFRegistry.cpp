@@ -120,13 +120,15 @@ RigidBodyWind::RigidBodyWind(WindType type, Vector3 pos, float radius) :
 	{
 	case WindType::Forward:
 		createVolume(Vector4(0.0,0.0,255,0.0));
+		speedModification = 0.01 * (MODIFICATOR / radius_);
 		break;
 	case WindType::Backward:
 		createVolume(Vector4(255, 0.0, 0.0, 0.0));
+		speedModification = 0.005 * (MODIFICATOR / radius_);
 		break;
 	case WindType::Upwards:
 		createVolume(Vector4(0.0, 255, 0.0, 0.0));
-		windDirection_ = Vector3(0, 200, 0);
+		windDirection_ = Vector3(0, 900, 0);
 		break;
 	default:
 		break;
@@ -147,8 +149,8 @@ void RigidBodyWind::updateForce(RigidBody* rb, float t)
 	Player* p = static_cast<Player *>(rb);
 	Vector3 playerVel = p->getVelocity();
 
-	if (type_ == WindType::Forward && playerVel.z < p->getMaxZVel()) playerVel.z += 0.15;
-	else if (type_ == WindType::Backward && playerVel.z > p->getMinZVel()) playerVel.z -= 0.08;
+	if (type_ == WindType::Forward && playerVel.z < p->getMaxZVel()) playerVel.z += speedModification;
+	else if (type_ == WindType::Backward && playerVel.z > p->getMinZVel()) playerVel.z -= speedModification;
 
 	p->setVelocity(playerVel);
 }
@@ -178,7 +180,6 @@ void rbInsideBox::updateForce(RigidBody* rb, float t)
 	if (!reached && isInside(rb)) {
 		reached = true;
 		Player* p = static_cast<Player*>(rb);
-		p->resetForces();
 		p->constrainMovement(true);
 		initFireworks();
 		std::cout << "Has ganado\nPulsa S para volver a jugar\n";

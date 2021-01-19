@@ -7,7 +7,7 @@ public:
 	physx::PxRigidDynamic* body;
 
 	RigidBody():lifeTime(0.0), rItem(nullptr),body(nullptr){}
-	~RigidBody() { rItem->release(); body->release(); }
+	virtual ~RigidBody() { rItem->release(); body->release(); }
 };
 
 class StaticRigidBody {
@@ -17,5 +17,5 @@ public:
 	physx::PxRigidStatic* body;
 
 	StaticRigidBody():lifeTime(0.0), rItem(nullptr), body(nullptr) {}
-	~StaticRigidBody(){ rItem->release(); body->release(); }
+	virtual ~StaticRigidBody(){ rItem->release(); body->release(); }
 };
