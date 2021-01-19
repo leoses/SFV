@@ -2,11 +2,6 @@
 
 Player::Player(PxShape* shape): RigidBody()
 {    
-	/*RigidBody* rb = createRigidDynamic(iniPos, shape, Vector3(0, 0, 0), Vector4(1.0, 0, 0, 1.0));
-
-	body = rb->body;
-	rItem = rb->rItem;*/
-
 	body = getPhysics()->createRigidDynamic(PxTransform(iniPos));
 	body->attachShape(*shape);
 	rItem = new RenderItem(shape,body, Vector4(1.0, 0, 0, 1.0));
@@ -14,41 +9,57 @@ Player::Player(PxShape* shape): RigidBody()
 	getScene()->addActor(*body);
 	PxRigidBodyExt::updateMassAndInertia(*body, PxReal(2));
 	
-	body->setLinearDamping(PxReal(0));
-	body->setLinearVelocity(PxVec3(0, 0, 50));
 	shape->release();
-	currCameraPlayerOffset = 50;
+
+	body->setName("Player");
 }
 
 Player::~Player()
 {
 }
 
+void Player::update(float t)
+{
+	//Para que no rebote al caer contra el suelo
+	if (isFalling)body->setLinearVelocity(Vector3(0, 0, 0)); 
+	if (vel.z < 60) vel.z += 0.05;
+
+	Vector3 newPos = body->getGlobalPose().p + vel*t;
+
+	body->setGlobalPose(PxTransform(newPos));
+	isFalling = false;
+}
+
 void Player::resetForces()
 {
 	body->clearForce(physx::PxForceMode::eIMPULSE);
+	body->clearForce(PxForceMode::eACCELERATION);
+	body->clearForce(PxForceMode::eVELOCITY_CHANGE);
 }
 
-float Player::getCurrCameraPlayerOffset() noexcept
+void Player::constrainMovement(bool constrain)
 {
-	return currCameraPlayerOffset;
+	isUnmovable = constrain;
+	body->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, constrain);
 }
 
-void Player::setCurrCameraPlayerOffset(const float newOffset) noexcept
-{
-	if (newOffset > MIN_CAMERA_CENTER_OFFSET)currCameraPlayerOffset = newOffset;
-}
 
 void Player::changeTrack(horizontalMovement dir)
 {
 	switch (dir)
 	{
 	case Left: {
-		body->setLinearVelocity(PxVec3(-15, 0, 50));
+		PxTransform t = body->getGlobalPose();
+		t.p.x -= 1;
+		body->setGlobalPose(t);
+		//body->setLinearVelocity(Vector3(-15, 0, 60));
 		break;  
 	}
 	case Right: {
-		body->setLinearVelocity(PxVec3(15, 0, 50));
+		PxTransform t = body->getGlobalPose();
+		t.p.x += 1;
+		body->setGlobalPose(t);
+		//body->setLinearVelocity(Vector3(15, 0, 60));
 		break; 
 	}
 	default:
@@ -56,11 +67,9 @@ void Player::changeTrack(horizontalMovement dir)
 	}
 }
 
-void Player::playerLose()
+void Player::reset()
 {
-	body->clearForce(PxForceMode::eACCELERATION);
-	body->clearForce(PxForceMode::eVELOCITY_CHANGE);
-	currCameraPlayerOffset = 50;
-	body->setLinearVelocity(PxVec3(0, 0, 50));
+	resetForces();
+	vel = PxVec3(0, 0, 60);
 	body->setGlobalPose(PxTransform(iniPos));
 }

@@ -81,6 +81,7 @@ public:
 
 	void initFireworkRules();
 	void update(float t);
+	void deactivateFireworks();
 	void createFirework(unsigned type, Firework* parent= nullptr);
 
 

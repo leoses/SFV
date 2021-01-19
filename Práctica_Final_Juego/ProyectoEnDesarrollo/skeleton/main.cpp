@@ -10,10 +10,9 @@
 #include "checkML.h" 
 #include "FireworkSystem.h"
 #include "ParticleForceRegistry.h"
-#include "ParticleSystem.h"
 #include "RigidBody.h"
 #include "RigidBodyFRegistry.h"
-#include "Floor.h"
+#include "Level.h"
 #include <iostream>
 #include "Player.h"
 
@@ -34,33 +33,12 @@ PxScene* gScene = NULL;
 ContactReportCallback gContactReportCallback;
 
 //Añadimos aquí como variables globales los elementos necesarios para la practica
-//NUMERO MÁXIMO DE PARTICULAS
-constexpr int MAX_PARTICLES = 1000;
-
-//lista con las partículas creadas
-std::list<Particle*> listParticles;
-
-std::list<RigidBodyWind*> winds_;
-
 float maxDistanceCamera;
 
 PxScene* getScene() noexcept { return gScene; }
 PxPhysics* getPhysics() noexcept{ return gPhysics; }
 
 #pragma region RigidBodies
-
-RigidBody* createRigidDynamic(const Vector3 & t, PxShape* shape, const Vector3 & speed, const Vector4 & color = Vector4(0, .5, 1.0, 1.0)) {
-	RigidBody* r = new RigidBody();
-	r->body = gPhysics->createRigidDynamic(PxTransform(t));
-	r->body->attachShape(*shape);
-	r->rItem = new RenderItem(shape, r->body,color );
-
-	gScene->addActor(*r->body);
-	PxRigidBodyExt::updateMassAndInertia(*r->body, PxReal(2));
-	r->body->addForce(speed * r->body->getMass());
-
-	return r;
-}
 
 StaticRigidBody* createRigidStatic(const Vector3 & t, PxShape* shape, const Vector4 & color) {
 	StaticRigidBody* r = new StaticRigidBody();
@@ -85,55 +63,15 @@ void removeRigidBodyFromForceSystem(RigidBody* rb) {
 #pragma endregion
 
 #pragma region Juego
-Floor* suelo = nullptr;
+Level* nivel = nullptr;
 Player* player = nullptr;
+ParticleForceRegistry* particleForceRegistry = nullptr;
+FireworkSystem* fireworks1 = nullptr;
+FireworkSystem* fireworks2 = nullptr;
 #pragma endregion
 
-#pragma region Funciones_Auxiliares
-//void addParticleToForceSystem(Particle* particle, ParticleForceGenerator* g) {
-//	if (forceSystem != nullptr)forceSystem->add(particle, g);
-//}
-//
-//void removeParticleFromForceSystem(Particle* particle, ParticleForceGenerator* g) {
-//	if (forceSystem != nullptr)forceSystem->remove(particle, g);
-//}
-
-Particle* findUnusedParticle() {
-	bool found = false;
-	auto it = listParticles.begin();
-
-	while (!found && it != listParticles.end()) {
-		if (!(*it)->isActive())found = true;
-
-		else ++it;
-	}
-
-	if (found)return (*it);
-	else return nullptr;
-}
-
-void createParticle(Vector3 pos, Vector3 vel) {
-	Particle* p = findUnusedParticle();
-	if (p != nullptr) {
-		p->setPosition(pos);
-		p->setVelocity(vel);
-		p->activateParticle();
-	}
-}
-
-void updateParticles(float t)
-{
-	//Actualizacion de posiciones
-	for (Particle* p : listParticles) {
-		if (!p->isActive())continue;
-		p->addTime(t);
-
-		//Si la partícula ya ha vivido el tiempo máximo la dejamos de renderizar
-		if (p->isDead()) p->desactivateParticle();
-		else p->integrate(t);
-	}
-}
-#pragma endregion
+void initFireworks() { fireworks1->createFirework(0); fireworks2->createFirework(0); }
+RigidBody* getPlayer() noexcept { return player; }
 
 void configurateCameraPos() {
 	//Configuración de la posición inicial de la camara
@@ -141,7 +79,6 @@ void configurateCameraPos() {
 	GetCamera()->setEye(Vector3(playerIniPos.x, playerIniPos.y + 50, playerIniPos.z - 50));
 	playerIniPos.z += 50;
 	GetCamera()->setDir(playerIniPos - GetCamera()->getEye());
-
 	maxDistanceCamera = (playerIniPos - GetCamera()->getEye()).magnitude();
 }
 
@@ -151,18 +88,15 @@ void initPhysics(bool interactive)
 	PX_UNUSED(interactive);
 
 	gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gAllocator, gErrorCallback);
-
 	gPvd = PxCreatePvd(*gFoundation);
 	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
 	gPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
-
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
-
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -30.0f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, -30.0f, 0.0f); ///GRAVEDAD
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = contactReportFilterShader;
@@ -175,19 +109,21 @@ void initPhysics(bool interactive)
 	PxGeometry* geo = new PxSphereGeometry(5);
 	PxShape* shape = CreateShape(*geo);
 	player = new Player(shape);
-
-	//shape->release();
 	delete geo;
+
+	//Sistema de Fuerzas de los RigidBody
+	rigidBodyForceSystem = new RigidBodyFRegistry();
 	
 	//Creamos el nivel
-	suelo = new Floor();
+	nivel = new Level();
 
-	rigidBodyForceSystem = new RigidBodyFRegistry();
+	//Ajustamos la camara a la posicion del jugador
+	configurateCameraPos();
 
-	RigidBodyWind* viento = new RigidBodyWind(WindType::Backward, Vector3(0, 0, 50),25);
-	winds_.push_back(viento);
-	addRigidBodyToForceSystem(player, viento);
-	
+	//Fuegos artificiales creados cuando llegamos al final del nivel
+	particleForceRegistry = new ParticleForceRegistry();
+	fireworks1 = new FireworkSystem(particleForceRegistry, Vector3(-20, -40, 1000), Vector3(0, -10, 0));
+	fireworks2 = new FireworkSystem(particleForceRegistry, Vector3(20, -40, 1000), Vector3(0, -10, 0));
 }
 
 // Function to configure what happens in each step of physics
@@ -200,18 +136,25 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	if (player->body->getGlobalPose().p.z  <= GetCamera()->getEye().z + player->getCurrCameraPlayerOffset()-10) {
-		std::cout << "has perdido\n";
-		player->playerLose();
-		configurateCameraPos();
+	if (player->getMovable()) { //True mientras el jugador no haya ganado el nivel
+		player->update(t);
+		rigidBodyForceSystem->updateForces(t);
+
+		if (player->body->getGlobalPose().p.z <= GetCamera()->getEye().z  + 45) { 
+			//Mostramos informacion por consola
+			std::cout << "Has perdido\n";
+			//El jugador vuelve a empezar desde el comienzo del nivel
+			player->reset();
+			configurateCameraPos();
+		}
+
+		GetCamera()->followPlayer(player->body->getGlobalPose().p, maxDistanceCamera, player->getVelocity(), t);
 	}
-
-	player->resetForces();
-	rigidBodyForceSystem->updateForces(t);
-
-	Vector3 playerPos = player->body->getGlobalPose().p;
-	GetCamera()->followPlayer(playerPos, maxDistanceCamera, player->getCurrCameraPlayerOffset());
-	
+	else {
+		particleForceRegistry->updateForces(t);
+		fireworks1->update(t);
+		fireworks2->update(t);
+	}
 }
 
 // Function to clean data
@@ -220,18 +163,12 @@ void cleanupPhysics(bool interactive)
 {
 	PX_UNUSED(interactive);
 
+	//Borramos recursos
 	delete player;
-	delete suelo;
-	
-	for (RigidBodyWind* v : winds_) {
-		delete v;
-	}
-
-	for (Particle* p : listParticles) {
-		delete p;
-		p = nullptr;
-	}
-
+	delete nivel;
+	delete fireworks1;
+	delete fireworks2;
+	delete particleForceRegistry;
 	delete rigidBodyForceSystem;
 
 	// Rigid Body ++++++++++++++++++++++++++++++++++++++++++
@@ -255,13 +192,30 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 	case 'C':
 	{
-		player->changeTrack(horizontalMovement::Left);
+		//Movimiento izq si no ha ganado todavia
+		if (player->getMovable()) player->changeTrack(horizontalMovement::Left);
 		break;
 	}
 	case 'Z':
 	{
-		player->changeTrack(horizontalMovement::Right);
+		//Movimiento dcha si no ha ganado todavia
+		if (player->getMovable()) player->changeTrack(horizontalMovement::Right);
 		break;
+	}
+	case 'S': {
+		if (!player->getMovable()) { //GetMovable == false -> el jugador se ha pasado el nivel
+			//ponemos al player de nuevo en movimiento
+			player->constrainMovement(false);
+			//Movemos al jugador al principio del nivel
+			player->reset();
+			//Resetear zona de victoria
+			nivel->getWinningAreaController()->resetWinningCondition();
+			//Volvemos a configurar la camara a la distancia original en la pos original
+			configurateCameraPos();
+			//Eliminamos los fuegos artificiales que no hayan terminado su vida util
+			fireworks1->deactivateFireworks();
+			fireworks2->deactivateFireworks();
+		}
 	}
 	default:
 		break;
@@ -272,6 +226,15 @@ void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 {
 	PX_UNUSED(actor1);
 	PX_UNUSED(actor2);
+
+	if (actor1->getName() == "Player" && actor2->getName() == "Suelo" ||
+		actor2->getName() == "Player" && actor1->getName() == "Suelo") {
+
+		//Para que el player no rebote contra el suelo
+		if (player->body->getLinearVelocity().y < -5.0) {
+			player->setPlayerFalling(); 
+		}
+	}
 }
 
 

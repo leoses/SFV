@@ -2,7 +2,7 @@
 
 Particle::~Particle()
 {
-	if(rItem != nullptr)rItem->release();
+	if (rItem != nullptr)rItem->release();
 
 	delete geo;
 }
@@ -60,7 +60,9 @@ void Particle::desactivateParticle()
 	setActive(false);
 	resetTime();
 
-	rItem->release();
-	rItem = nullptr;
+	if (rItem != nullptr) {
+		rItem->release();
+		rItem = nullptr;
+	}
 }
 

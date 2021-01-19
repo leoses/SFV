@@ -1,5 +1,6 @@
 #include "RigidBodyFRegistry.h"
 #include "Player.h"
+#include <iostream>
 
 rbInsideASphere::rbInsideASphere(Vector3 center, float radius)
 {
@@ -117,17 +118,15 @@ RigidBodyWind::RigidBodyWind(WindType type, Vector3 pos, float radius) :
 
 	switch (type_)
 	{
-	case Forward:
+	case WindType::Forward:
 		createVolume(Vector4(0.0,0.0,255,0.0));
-		windDirection_ = Vector3(0, 0, 50);
 		break;
-	case Backward:
+	case WindType::Backward:
 		createVolume(Vector4(255, 0.0, 0.0, 0.0));
-		windDirection_ = Vector3(0, 0, -30);
 		break;
-	case Upwards:
+	case WindType::Upwards:
 		createVolume(Vector4(0.0, 255, 0.0, 0.0));
-		windDirection_ = Vector3(0, 20, 0);
+		windDirection_ = Vector3(0, 200, 0);
 		break;
 	default:
 		break;
@@ -139,17 +138,50 @@ void RigidBodyWind::updateForce(RigidBody* rb, float t)
 {
 	if (!rbInsideVolume(rb->body->getGlobalPose().p))return;
 
-	rb->body->addForce(windDirection_,physx::PxForceMode::eIMPULSE);
 
-	if (type_ == WindType::Upwards)return;
+	if (type_ == WindType::Upwards) { 
+		rb->body->addForce(windDirection_, physx::PxForceMode::eIMPULSE);
+		return;
+	}
 
 	Player* p = static_cast<Player *>(rb);
-	float off = p->getCurrCameraPlayerOffset();
-	if (off > MIN_CAMERA_CENTER_OFFSET && type_ == WindType::Forward) {
-		p->setCurrCameraPlayerOffset(off - 0.01);
-	}
-	else if (type_ == WindType::Backward) {
-		p->setCurrCameraPlayerOffset(off + 0.005);
+	Vector3 playerVel = p->getVelocity();
+
+	if (type_ == WindType::Forward && playerVel.z < p->getMaxZVel()) playerVel.z += 0.15;
+	else if (type_ == WindType::Backward && playerVel.z > p->getMinZVel()) playerVel.z -= 0.08;
+
+	p->setVelocity(playerVel);
+}
+
+rbInsideBox::rbInsideBox(Vector3 dim, Vector3 center, Vector4 color):dim_(dim), center_(center)
+{
+	PxGeometry* geo = new PxBoxGeometry(dim_);
+	PxShape* shape = CreateShape(*geo);
+	t = PxTransform(center);
+	box = new RenderItem(shape, &t, color);
+	shape->release();
+	delete geo;
+}
+
+rbInsideBox::~rbInsideBox()
+{
+	if (box != nullptr)box->release();
+}
+
+bool rbInsideBox::isInside(RigidBody* rb)
+{
+	return (center_.z - rb->body->getGlobalPose().p.z <= dim_.z);
+}
+
+void rbInsideBox::updateForce(RigidBody* rb, float t)
+{
+	if (!reached && isInside(rb)) {
+		reached = true;
+		Player* p = static_cast<Player*>(rb);
+		p->resetForces();
+		p->constrainMovement(true);
+		initFireworks();
+		std::cout << "Has ganado\nPulsa S para volver a jugar\n";
 	}
 	
 }

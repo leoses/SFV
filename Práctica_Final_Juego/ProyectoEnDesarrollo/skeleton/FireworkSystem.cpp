@@ -13,10 +13,7 @@ FireworkSystem::FireworkSystem(ParticleForceRegistry* fr,Vector3 initialSystemPo
 	}
 
 	//inicializar generador randoms
-	srand(time(NULL));
-
-	//Creamos el primer fuego artificial
-	createFirework(0);
+	/*srand(time(NULL));*/
 }
 
 FireworkSystem::~FireworkSystem()
@@ -63,12 +60,19 @@ void FireworkSystem::update(float t)
 	}
 }
 
+void FireworkSystem::deactivateFireworks()
+{
+	for (Firework* p : fireworkElements) {
+		if(p->isActive())p->desactivateParticle();
+	}
+}
+
 void FireworkSystem::initFireworkRules()
 {
 	rules.push_back({ //at(0)
 			0, // type
 			1.5f, 2.4f, // age range
-			Vector3(0, 0, 0), Vector3(0, 0, 0), // velocity range
+			Vector3(0, 30, 0), Vector3(0, 60, 0), // velocity range
 			0.1, // damping
 			Vector4(0,255, 0, 1),//color
 	});
@@ -78,7 +82,7 @@ void FireworkSystem::initFireworkRules()
 	rules.push_back({ //at(1)
 			1, // type
 			1.0f, 2.0f, // age range
-			Vector3(-40,60,-40), Vector3(40,80,40), // velocity range
+			Vector3(-10,30,-10), Vector3(20,50,20), // velocity range
 			0.1, // damping
 			Vector4(0,0, 255, 1),//color
     }); 
@@ -88,7 +92,7 @@ void FireworkSystem::initFireworkRules()
 	rules.push_back({ //at(2)
 			2, // type
 			1.0f, 2.0f, // age range
-			Vector3(-40,60,-40), Vector3(40,80,40), // velocity range
+			Vector3(-20,30,-20), Vector3(20,50,20), // velocity range
 			0.1, // damping
 			Vector4(255,0, 0, 1),//color
 	});

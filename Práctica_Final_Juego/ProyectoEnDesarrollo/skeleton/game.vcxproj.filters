@@ -11,16 +11,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="callbacks.cpp" />
     <ClCompile Include="Particle.cpp" />
-    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Firework.cpp" />
     <ClCompile Include="FireworkSystem.cpp" />
     <ClCompile Include="ParticleForceRegistry.cpp" />
-    <ClCompile Include="ParticleContact.cpp" />
-    <ClCompile Include="ParticleLink.cpp" />
-    <ClCompile Include="RigidBodiesSystem.cpp" />
     <ClCompile Include="RigidBodyFRegistry.cpp" />
-    <ClCompile Include="Floor.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Level.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -34,18 +30,14 @@
     <ClInclude Include="callbacks.hpp" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="checkML.h" />
-    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Firework.h" />
     <ClInclude Include="FireworkSystem.h" />
     <ClInclude Include="ParticleForceRegistry.h" />
-    <ClInclude Include="ParticleContact.h" />
-    <ClInclude Include="ParticleLink.h" />
-    <ClInclude Include="RigidBodiesSystem.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="RigidBodyForceGenerator.h" />
     <ClInclude Include="RigidBodyFRegistry.h" />
-    <ClInclude Include="Floor.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Level.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

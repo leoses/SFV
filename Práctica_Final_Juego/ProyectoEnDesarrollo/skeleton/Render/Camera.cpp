@@ -60,7 +60,7 @@ bool Camera::handleKey(unsigned char key, int x, int y, float speed)
 	PX_UNUSED(y);
 
 	PxVec3 viewY = mDir.cross(PxVec3(0,1,0)).getNormalized();
-	switch(toupper(key))
+	/*switch(toupper(key))
 	{
 	case 'W':	mEye += mDir*2.0f*speed;		break;
 	case 'S':	mEye -= mDir*2.0f*speed;		break;
@@ -68,7 +68,8 @@ bool Camera::handleKey(unsigned char key, int x, int y, float speed)
 	case 'D':	mEye += viewY*2.0f*speed;		break;
 	default:							return false;
 	}
-	return true;
+	return true;*/
+	return false;
 }
 
 void Camera::handleAnalogMove(float x, float y)
@@ -78,10 +79,12 @@ void Camera::handleAnalogMove(float x, float y)
 	mEye += viewY*x;
 }
 
-void Camera::followPlayer(PxVec3 posPlayer, float dist, float offset)
+void Camera::followPlayer(physx::PxVec3 posPlayer, float dist, physx::PxVec3 velPlayer, float t)
 {
 	mEye.y = posPlayer.y - (mDir.y * dist);
-	mEye.z = posPlayer.z + offset - (mDir.z * dist);
+
+	if (velPlayer.z < 60)mEye.z += 60 * t;
+	else mEye.z += velPlayer.z * t;
 }
 
 void Camera::handleMotion(int x, int y)

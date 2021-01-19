@@ -8,6 +8,8 @@
 
 using namespace physx;
 
+extern void initFireworks();
+
 //Clase abstracta
 class rbForceGenerator
 {
@@ -55,7 +57,7 @@ public:
 
 };
 
-enum WindType {Forward, Backward, Upwards};
+enum class WindType {Forward, Backward, Upwards};
 
 class RigidBodyWind :public rbInsideASphere {
 public:
@@ -67,6 +69,26 @@ private:
 	//Direccion del viento
 	Vector3 windDirection_;
 	WindType type_;
+};
+
+class rbInsideBox : public rbForceGenerator {
+private:
+	Vector3 dim_;
+	Vector3 center_;
+	PxTransform t;
+	RenderItem* box = nullptr;
+
+	bool reached = false;
+public:
+
+	rbInsideBox(Vector3 dim_, Vector3 center_, Vector4 color);
+	virtual ~rbInsideBox();
+
+	void resetWinningCondition() { reached = false; }
+
+	bool isInside(RigidBody* rb);
+	virtual void updateForce(RigidBody* rb, float t) override;
+
 };
 
 class RigidBodyFRegistry
@@ -96,4 +118,6 @@ public:
 	virtual void updateForces(float t);
 
 };
+
+
 
