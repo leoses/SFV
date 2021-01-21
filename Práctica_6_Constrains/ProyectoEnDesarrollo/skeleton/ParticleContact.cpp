@@ -21,27 +21,29 @@ void ParticleContact::resolveVelocity(float t)
 	//if separatingVelocity greater than 0, no impulse needeed 
 	//because particles are eather getting apart or at the same distance
 	if (separatingVelocity1 >= 0) return;
-
-	// Compute separating velocity after collision
-
-	//separatingVelocity at the next moment
-	float separatingVelocity2 = (-restitution) * separatingVelocity1;
-	//Computing diference between current and next separation velocities
-	float deltaSepVelocity = separatingVelocity2 - separatingVelocity1;
-	
 	//Two objects have infiniteMass ->no movement so no impulse
 	if (particle[0]->getInverseMass() <= 0.0f && particle[1]->getInverseMass() <= 0.0f) return;
+
+	// Compute separating velocity after collision
+	//separatingVelocity at the next moment
+	float separatingVelocity2 = (-restitution) * separatingVelocity1;
 	
-	// Compute total impulse
+	//Computing diference between current and next separation velocities
+	//to calculate impulse 
+	float deltaSepVelocity = separatingVelocity2 - separatingVelocity1;
+	
+	// Compute total impulse -> g = m.v = v/(m^-1)
+	//units kg*m/s
 	float impulse = deltaSepVelocity/ (particle[0]->getInverseMass() + particle[1]->getInverseMass());
 
-	//Compute amount impulse per unit of inverse mass
-	Vector3 imPerIMass = contactNormal * impulse;
+	//Direction in which the impulse is applied
+	Vector3 totalImpulseInContact = contactNormal * impulse; // kg*m/s
 
 	// Set new velocity for each particle
 	//newvel = oldvel + 1/m*imPerIMass
-	particle[0]->setVelocity(particle[0]->getVelocity() + imPerIMass * particle[0]->getInverseMass());
-	particle[1]->setVelocity(particle[1]->getVelocity() - imPerIMass * particle[1]->getInverseMass()); //opossite dir
+	//units m/s -> m/s, 1/kg * kg * m/s = m/s, m/s;
+	particle[0]->setVelocity(particle[0]->getVelocity() + totalImpulseInContact * particle[0]->getInverseMass());
+	particle[1]->setVelocity(particle[1]->getVelocity() - totalImpulseInContact * particle[1]->getInverseMass()); //opossite dir
 
 }
 
@@ -55,7 +57,6 @@ void ParticleContact::resolveInterpenetration(float t)
 	if (totalInvMass <= 0) return;
 
 	// Calculate factor of each particle depending on mass
-	//Vector3 displacementPerIMass = contactNormal / (-penetration * totalInvMass);
 	Vector3 displacementPerIMass = contactNormal *(-penetration / totalInvMass);
 
 	
